@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+"use client";
+import React, { useCallback, useState } from "react";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ImageUploadProps {
   value: string;
@@ -23,35 +24,41 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFile = useCallback((file: File) => {
-    setError(null);
+  const handleFile = useCallback(
+    (file: File) => {
+      setError(null);
 
-    if (!file.type.startsWith('image/')) {
-      setError('File harus berupa gambar');
-      return;
-    }
+      if (!file.type.startsWith("image/")) {
+        setError("File harus berupa gambar");
+        return;
+      }
 
-    const maxSize = maxSizeMB * 1024 * 1024;
-    if (file.size > maxSize) {
-      setError(`Ukuran file maksimal ${maxSizeMB}MB`);
-      return;
-    }
+      const maxSize = maxSizeMB * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError(`Ukuran file maksimal ${maxSizeMB}MB`);
+        return;
+      }
 
-    // Revoke old URL if exists
-    if (value && value.startsWith('blob:')) {
-      URL.revokeObjectURL(value);
-    }
+      // Revoke old URL if exists
+      if (value && value.startsWith("blob:")) {
+        URL.revokeObjectURL(value);
+      }
 
-    const objectUrl = URL.createObjectURL(file);
-    onChange(objectUrl);
-  }, [maxSizeMB, onChange, value]);
+      const objectUrl = URL.createObjectURL(file);
+      onChange(objectUrl);
+    },
+    [maxSizeMB, onChange, value]
+  );
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  }, [handleFile]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    },
+    [handleFile]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -63,16 +70,19 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     setIsDragging(false);
   }, []);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  }, [handleFile]);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) handleFile(file);
+    },
+    [handleFile]
+  );
 
   const handleClear = useCallback(() => {
-    if (value && value.startsWith('blob:')) {
+    if (value && value.startsWith("blob:")) {
       URL.revokeObjectURL(value);
     }
-    onChange('');
+    onChange("");
     setError(null);
   }, [onChange, value]);
 
@@ -128,9 +138,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <ImageIcon className="w-10 h-10 mb-3 text-muted-foreground" />
             <p className="mb-2 text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">Klik untuk upload</span> atau drag & drop
+              <span className="font-semibold text-primary">
+                Klik untuk upload
+              </span>{" "}
+              atau drag & drop
             </p>
-            <p className="text-xs text-muted-foreground">PNG, JPG, WEBP (Maks. {maxSizeMB}MB)</p>
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG, WEBP (Maks. {maxSizeMB}MB)
+            </p>
           </div>
           <input
             type="file"
@@ -143,7 +158,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      {value && value.startsWith('blob:') && (
+      {value && value.startsWith("blob:") && (
         <p className="text-xs text-amber-600 flex items-center gap-1">
           ⚠️ Gambar bersifat temporary (akan hilang saat refresh)
         </p>

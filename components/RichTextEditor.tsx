@@ -1,12 +1,13 @@
-import React, { useRef, useState } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Image from '@tiptap/extension-image';
-import { Table } from '@tiptap/extension-table';
-import { TableRow } from '@tiptap/extension-table-row';
-import { TableCell } from '@tiptap/extension-table-cell';
-import { TableHeader } from '@tiptap/extension-table-header';
+"use client";
+import React, { useRef, useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Image from "@tiptap/extension-image";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table-row";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
 import {
   Bold,
   Italic,
@@ -19,12 +20,18 @@ import {
   Trash2,
   ImagePlus,
   X,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface PendingImage {
   url: string;
@@ -45,7 +52,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onChange,
   label,
   required = false,
-  placeholder = 'Tulis konten di sini...',
+  placeholder = "Tulis konten di sini...",
   className,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,7 +69,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       Underline,
       Image.configure({
         HTMLAttributes: {
-          class: 'content-image',
+          class: "content-image",
         },
       }),
       Table.configure({
@@ -73,12 +80,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       TableHeader,
     ],
     content: value,
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
     editorProps: {
       attributes: {
-        class: 'outline-none min-h-[180px]',
+        class: "outline-none min-h-[180px]",
       },
     },
   });
@@ -89,10 +97,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
     const newImages: PendingImage[] = [];
     Array.from(files).forEach((file) => {
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         newImages.push({
           url: URL.createObjectURL(file),
-          caption: '',
+          caption: "",
         });
       }
     });
@@ -103,7 +111,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       setImageDialogOpen(true);
     }
 
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleAddMoreImages = () => {
@@ -153,8 +161,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
     // Insert as a single content batch so images don't overwrite each other
     const content = converted.flatMap((img) => [
-      { type: 'image', attrs: { src: img.src, alt: img.caption, title: img.caption } },
-      { type: 'paragraph' },
+      {
+        type: "image",
+        attrs: { src: img.src, alt: img.caption, title: img.caption },
+      },
+      { type: "paragraph" },
     ]);
 
     editor.chain().focus().insertContent(content).run();
@@ -165,7 +176,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     setImageDialogOpen(false);
   };
 
-  if (!editor) return null;
+  if (!editor) {
+    return (
+      <div className="border rounded-lg p-4 min-h-50 animate-pulse bg-muted" />
+    );
+  }
 
   const ToolbarButton = ({
     onClick,
@@ -180,7 +195,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   }) => (
     <Button
       type="button"
-      variant={isActive ? 'default' : 'ghost'}
+      variant={isActive ? "default" : "ghost"}
       size="sm"
       onClick={onClick}
       title={title}
@@ -191,9 +206,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   );
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn("space-y-2", className)}>
       {label && (
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-foreground mb-2 block">
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
         </label>
@@ -204,21 +219,21 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border bg-muted/30">
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
-            isActive={editor.isActive('bold')}
+            isActive={editor.isActive("bold")}
             title="Bold"
           >
             <Bold className="w-4 h-4" />
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            isActive={editor.isActive('italic')}
+            isActive={editor.isActive("italic")}
             title="Italic"
           >
             <Italic className="w-4 h-4" />
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleUnderline().run()}
-            isActive={editor.isActive('underline')}
+            isActive={editor.isActive("underline")}
             title="Underline"
           >
             <UnderlineIcon className="w-4 h-4" />
@@ -227,15 +242,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Separator orientation="vertical" className="h-6 mx-1" />
 
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            isActive={editor.isActive('heading', { level: 2 })}
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+            isActive={editor.isActive("heading", { level: 2 })}
             title="Heading 2"
           >
             <Heading2 className="w-4 h-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            isActive={editor.isActive('heading', { level: 3 })}
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+            isActive={editor.isActive("heading", { level: 3 })}
             title="Heading 3"
           >
             <Heading3 className="w-4 h-4" />
@@ -245,14 +264,14 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            isActive={editor.isActive('bulletList')}
+            isActive={editor.isActive("bulletList")}
             title="Bullet List"
           >
             <List className="w-4 h-4" />
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            isActive={editor.isActive('orderedList')}
+            isActive={editor.isActive("orderedList")}
             title="Numbered List"
           >
             <ListOrdered className="w-4 h-4" />
@@ -262,13 +281,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
           <ToolbarButton
             onClick={() =>
-              editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+              editor
+                .chain()
+                .focus()
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run()
             }
             title="Insert Table"
           >
             <TableIcon className="w-4 h-4" />
           </ToolbarButton>
-          {editor.isActive('table') && (
+          {editor.isActive("table") && (
             <ToolbarButton
               onClick={() => editor.chain().focus().deleteTable().run()}
               title="Delete Table"
@@ -300,13 +323,16 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <EditorContent editor={editor} className="tiptap-editor" />
       </div>
 
-      <Dialog open={imageDialogOpen} onOpenChange={(open) => !open && handleCancelImages()}>
+      <Dialog
+        open={imageDialogOpen}
+        onOpenChange={(open) => !open && handleCancelImages()}
+      >
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {pendingImages.length > 1
                 ? `Upload ${pendingImages.length} Gambar`
-                : 'Upload Gambar'}
+                : "Upload Gambar"}
             </DialogTitle>
           </DialogHeader>
 
@@ -340,7 +366,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   <Input
                     value={img.caption}
                     onChange={(e) => updateCaption(idx, e.target.value)}
-                    placeholder={`Contoh: Langkah ${idx + 1} — Isi formulir pendaftaran`}
+                    placeholder={`Contoh: Langkah ${
+                      idx + 1
+                    } — Isi formulir pendaftaran`}
                     className="text-sm"
                   />
                 </div>
@@ -349,7 +377,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Keterangan akan tampil saat gambar di-zoom pada halaman detail produk.
+            Keterangan akan tampil saat gambar di-zoom pada halaman detail
+            produk.
           </p>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -362,7 +391,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <ImagePlus className="w-4 h-4 mr-2" />
               Tambah Gambar Lagi
             </Button>
-            <Button type="button" variant="outline" onClick={handleCancelImages}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancelImages}
+            >
               Batal
             </Button>
             <Button
@@ -370,7 +403,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               onClick={handleInsertImages}
               disabled={pendingImages.length === 0}
             >
-              Sisipkan {pendingImages.length > 1 ? `${pendingImages.length} Gambar` : 'Gambar'}
+              Sisipkan{" "}
+              {pendingImages.length > 1
+                ? `${pendingImages.length} Gambar`
+                : "Gambar"}
             </Button>
           </DialogFooter>
         </DialogContent>

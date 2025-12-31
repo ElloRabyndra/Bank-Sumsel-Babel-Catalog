@@ -3,11 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import {
-  LayoutDashboard,
-  FolderTree,
-  Package,
-} from "lucide-react";
+import { LayoutDashboard, FolderTree, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const adminNavItems = [
@@ -25,7 +21,7 @@ export default function AdminLayout({
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return pathname === href;
-    return pathname.startsWith(href);
+    return pathname?.startsWith(href);
   };
 
   return (
