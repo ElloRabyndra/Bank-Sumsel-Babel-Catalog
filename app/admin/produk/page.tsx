@@ -148,7 +148,7 @@ const AdminProducts = () => {
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="w-full md:w-[180px]">
+                <SelectTrigger className="w-full md:w-45">
                   <Filter className="w-4 h-4 mr-2" />
                   <SelectValue placeholder="Kategori" />
                 </SelectTrigger>
@@ -168,7 +168,7 @@ const AdminProducts = () => {
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="w-full md:w-[150px]">
+                <SelectTrigger className="w-full md:w-45">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>

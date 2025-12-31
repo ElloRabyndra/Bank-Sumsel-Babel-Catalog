@@ -203,13 +203,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
 
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
-          <TabsTrigger value="basic" className="flex-1 min-w-[140px]">
+          <TabsTrigger value="basic" className="flex-1 min-w-35">
             Informasi Dasar
           </TabsTrigger>
-          <TabsTrigger value="media" className="flex-1 min-w-[100px]">
+          <TabsTrigger value="media" className="flex-1 min-w-25">
             Media
           </TabsTrigger>
-          <TabsTrigger value="content" className="flex-1 min-w-[140px]">
+          <TabsTrigger value="content" className="flex-1 min-w-35">
             Konten Produk
           </TabsTrigger>
         </TabsList>
