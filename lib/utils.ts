@@ -19,11 +19,19 @@ export const generateSlug = (text: string): string => {
 };
 
 export const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const d = new Date(date);
+  
+  // Format manual untuk konsistensi server/client
+  const months = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  
+  const day = d.getDate();
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  
+  return `${day} ${month} ${year}`;
 };
 
 export const truncate = (text: string, length: number): string => {
@@ -45,6 +53,12 @@ export const extractYouTubeID = (url: string): string | null => {
 };
 
 export const stripHtml = (html: string): string => {
+  if (typeof window === 'undefined') {
+    // Server-side: gunakan regex
+    return html.replace(/<[^>]*>/g, '').trim();
+  }
+  
+  // Client-side: gunakan DOM
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText || '';
