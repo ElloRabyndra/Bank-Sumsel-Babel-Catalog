@@ -1,7 +1,14 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { Category, Product } from '@/types';
-import { initialCategories, createInitialProducts } from '@/data/mockData';
-import { generateId, generateSlug } from '@/lib/utils';
+"use client";
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  ReactNode,
+} from "react";
+import { Category, Product } from "@/types";
+import { initialCategories, createInitialProducts } from "@/data/mockData";
+import { generateId, generateSlug } from "@/lib/utils";
 
 interface CatalogState {
   categories: Category[];
@@ -9,22 +16,35 @@ interface CatalogState {
 }
 
 type CatalogAction =
-  | { type: 'SET_DATA'; payload: CatalogState }
-  | { type: 'ADD_CATEGORY'; payload: Omit<Category, 'id' | 'slug' | 'createdAt' | 'updatedAt'> }
-  | { type: 'UPDATE_CATEGORY'; payload: { id: string; data: Partial<Category> } }
-  | { type: 'DELETE_CATEGORY'; payload: string }
-  | { type: 'ADD_PRODUCT'; payload: Omit<Product, 'id' | 'slug' | 'createdAt' | 'updatedAt'> }
-  | { type: 'UPDATE_PRODUCT'; payload: { id: string; data: Partial<Product> } }
-  | { type: 'DELETE_PRODUCT'; payload: string }
-  | { type: 'TOGGLE_PUBLISH'; payload: string };
+  | { type: "SET_DATA"; payload: CatalogState }
+  | {
+      type: "ADD_CATEGORY";
+      payload: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">;
+    }
+  | {
+      type: "UPDATE_CATEGORY";
+      payload: { id: string; data: Partial<Category> };
+    }
+  | { type: "DELETE_CATEGORY"; payload: string }
+  | {
+      type: "ADD_PRODUCT";
+      payload: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">;
+    }
+  | { type: "UPDATE_PRODUCT"; payload: { id: string; data: Partial<Product> } }
+  | { type: "DELETE_PRODUCT"; payload: string }
+  | { type: "TOGGLE_PUBLISH"; payload: string };
 
 interface CatalogContextType extends CatalogState {
-  addCategory: (data: Omit<Category, 'id' | 'slug' | 'createdAt' | 'updatedAt'>) => void;
+  addCategory: (
+    data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => void;
   updateCategory: (id: string, data: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
   getCategoryBySlug: (slug: string) => Category | undefined;
   getCategoryById: (id: string) => Category | undefined;
-  addProduct: (data: Omit<Product, 'id' | 'slug' | 'createdAt' | 'updatedAt'>) => void;
+  addProduct: (
+    data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => void;
   updateProduct: (id: string, data: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
   togglePublish: (id: string) => void;
@@ -36,14 +56,17 @@ interface CatalogContextType extends CatalogState {
   getProductCount: (categoryId: string) => number;
 }
 
-const STORAGE_KEY = 'bsb_catalog_data';
+const STORAGE_KEY = "bsb_catalog_data";
 
-const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogState => {
+const catalogReducer = (
+  state: CatalogState,
+  action: CatalogAction
+): CatalogState => {
   switch (action.type) {
-    case 'SET_DATA':
+    case "SET_DATA":
       return action.payload;
 
-    case 'ADD_CATEGORY': {
+    case "ADD_CATEGORY": {
       const newCategory: Category = {
         ...action.payload,
         id: generateId(),
@@ -54,7 +77,7 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
       return { ...state, categories: [...state.categories, newCategory] };
     }
 
-    case 'UPDATE_CATEGORY': {
+    case "UPDATE_CATEGORY": {
       return {
         ...state,
         categories: state.categories.map((cat) =>
@@ -62,7 +85,9 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
             ? {
                 ...cat,
                 ...action.payload.data,
-                slug: action.payload.data.name ? generateSlug(action.payload.data.name) : cat.slug,
+                slug: action.payload.data.name
+                  ? generateSlug(action.payload.data.name)
+                  : cat.slug,
                 updatedAt: new Date().toISOString(),
               }
             : cat
@@ -70,14 +95,16 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
       };
     }
 
-    case 'DELETE_CATEGORY':
+    case "DELETE_CATEGORY":
       return {
         ...state,
         categories: state.categories.filter((cat) => cat.id !== action.payload),
-        products: state.products.filter((prod) => prod.categoryId !== action.payload),
+        products: state.products.filter(
+          (prod) => prod.categoryId !== action.payload
+        ),
       };
 
-    case 'ADD_PRODUCT': {
+    case "ADD_PRODUCT": {
       const newProduct: Product = {
         ...action.payload,
         id: generateId(),
@@ -88,7 +115,7 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
       return { ...state, products: [...state.products, newProduct] };
     }
 
-    case 'UPDATE_PRODUCT': {
+    case "UPDATE_PRODUCT": {
       return {
         ...state,
         products: state.products.map((prod) =>
@@ -96,7 +123,9 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
             ? {
                 ...prod,
                 ...action.payload.data,
-                slug: action.payload.data.title ? generateSlug(action.payload.data.title) : prod.slug,
+                slug: action.payload.data.title
+                  ? generateSlug(action.payload.data.title)
+                  : prod.slug,
                 updatedAt: new Date().toISOString(),
               }
             : prod
@@ -104,18 +133,22 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
       };
     }
 
-    case 'DELETE_PRODUCT':
+    case "DELETE_PRODUCT":
       return {
         ...state,
         products: state.products.filter((prod) => prod.id !== action.payload),
       };
 
-    case 'TOGGLE_PUBLISH':
+    case "TOGGLE_PUBLISH":
       return {
         ...state,
         products: state.products.map((prod) =>
           prod.id === action.payload
-            ? { ...prod, isPublished: !prod.isPublished, updatedAt: new Date().toISOString() }
+            ? {
+                ...prod,
+                isPublished: !prod.isPublished,
+                updatedAt: new Date().toISOString(),
+              }
             : prod
         ),
       };
@@ -127,8 +160,13 @@ const catalogReducer = (state: CatalogState, action: CatalogAction): CatalogStat
 
 const CatalogContext = createContext<CatalogContextType | undefined>(undefined);
 
-export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(catalogReducer, { categories: [], products: [] });
+export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(catalogReducer, {
+    categories: [],
+    products: [],
+  });
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -136,18 +174,24 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        dispatch({ type: 'SET_DATA', payload: parsed });
+        dispatch({ type: "SET_DATA", payload: parsed });
       } catch {
         // If parsing fails, use initial data
         const cats = initialCategories;
         const prods = createInitialProducts(cats);
-        dispatch({ type: 'SET_DATA', payload: { categories: cats, products: prods } });
+        dispatch({
+          type: "SET_DATA",
+          payload: { categories: cats, products: prods },
+        });
       }
     } else {
       // First time: use initial mock data
       const cats = initialCategories;
       const prods = createInitialProducts(cats);
-      dispatch({ type: 'SET_DATA', payload: { categories: cats, products: prods } });
+      dispatch({
+        type: "SET_DATA",
+        payload: { categories: cats, products: prods },
+      });
     }
   }, []);
 
@@ -158,16 +202,18 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   }, [state]);
 
-  const addCategory = (data: Omit<Category, 'id' | 'slug' | 'createdAt' | 'updatedAt'>) => {
-    dispatch({ type: 'ADD_CATEGORY', payload: data });
+  const addCategory = (
+    data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => {
+    dispatch({ type: "ADD_CATEGORY", payload: data });
   };
 
   const updateCategory = (id: string, data: Partial<Category>) => {
-    dispatch({ type: 'UPDATE_CATEGORY', payload: { id, data } });
+    dispatch({ type: "UPDATE_CATEGORY", payload: { id, data } });
   };
 
   const deleteCategory = (id: string) => {
-    dispatch({ type: 'DELETE_CATEGORY', payload: id });
+    dispatch({ type: "DELETE_CATEGORY", payload: id });
   };
 
   const getCategoryBySlug = (slug: string) => {
@@ -178,20 +224,22 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
     return state.categories.find((cat) => cat.id === id);
   };
 
-  const addProduct = (data: Omit<Product, 'id' | 'slug' | 'createdAt' | 'updatedAt'>) => {
-    dispatch({ type: 'ADD_PRODUCT', payload: data });
+  const addProduct = (
+    data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => {
+    dispatch({ type: "ADD_PRODUCT", payload: data });
   };
 
   const updateProduct = (id: string, data: Partial<Product>) => {
-    dispatch({ type: 'UPDATE_PRODUCT', payload: { id, data } });
+    dispatch({ type: "UPDATE_PRODUCT", payload: { id, data } });
   };
 
   const deleteProduct = (id: string) => {
-    dispatch({ type: 'DELETE_PRODUCT', payload: id });
+    dispatch({ type: "DELETE_PRODUCT", payload: id });
   };
 
   const togglePublish = (id: string) => {
-    dispatch({ type: 'TOGGLE_PUBLISH', payload: id });
+    dispatch({ type: "TOGGLE_PUBLISH", payload: id });
   };
 
   const getProductBySlug = (slug: string) => {
@@ -203,7 +251,9 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const getProductsByCategory = (categoryId: string) => {
-    return state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished);
+    return state.products.filter(
+      (prod) => prod.categoryId === categoryId && prod.isPublished
+    );
   };
 
   const searchProducts = (query: string) => {
@@ -221,7 +271,9 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const getProductCount = (categoryId: string) => {
-    return state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished).length;
+    return state.products.filter(
+      (prod) => prod.categoryId === categoryId && prod.isPublished
+    ).length;
   };
 
   return (
@@ -253,7 +305,7 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({ children })
 export const useCatalog = () => {
   const context = useContext(CatalogContext);
   if (!context) {
-    throw new Error('useCatalog must be used within a CatalogProvider');
+    throw new Error("useCatalog must be used within a CatalogProvider");
   }
   return context;
 };

@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, LayoutDashboard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { Menu, Search, LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: '/', label: 'Beranda' },
-  { href: '/kategori/tabungan', label: 'Tabungan' },
-  { href: '/kategori/fasilitas-layanan', label: 'Layanan' },
-  { href: '/kategori/giro', label: 'Giro' },
-  { href: '/kategori/kredit', label: 'Kredit' },
+  { href: "/", label: "Beranda" },
+  { href: "/kategori/tabungan", label: "Tabungan" },
+  { href: "/kategori/fasilitas-layanan", label: "Layanan" },
+  { href: "/kategori/giro", label: "Giro" },
+  { href: "/kategori/kredit", label: "Kredit" },
 ];
 
-export const Navbar: React.FC = () => {
-  const location = useLocation();
+export function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    if (path === "/") return pathname === "/";
+    return pathname.startsWith(path);
   };
 
   return (
@@ -27,14 +36,14 @@ export const Navbar: React.FC = () => {
       <div className="container mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 h-10">
-            {/* <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">BSB</span>
-            </div>
-            <span className="font-semibold text-foreground hidden sm:inline">
-              Bank Sumsel Babel
-            </span> */}
-            <img src="/public/logo.png" alt="" className='w-full h-full' />
+          <Link href="/" className="flex items-center gap-2 h-10">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={120}
+              height={40}
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,12 +51,12 @@ export const Navbar: React.FC = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                to={link.href}
+                href={link.href}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  "px-4 py-2 text-sm font-medium rounded-md transition-colors",
                   isActive(link.href)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
                 {link.label}
@@ -57,13 +66,18 @@ export const Navbar: React.FC = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Link to="/search">
-              <Button variant="ghost" size="icon" className="text-muted-foreground">
+            <Link href="/search">
+              <Button variant="ghost" size="icon">
                 <Search className="h-5 w-5" />
               </Button>
             </Link>
-            <Link to="/admin">
-              <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
+
+            <Link href="/admin">
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex gap-2"
+              >
                 <LayoutDashboard className="h-4 w-4" />
                 Admin
               </Button>
@@ -76,25 +90,30 @@ export const Navbar: React.FC = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px]">
+
+              <SheetContent side="right" className="w-70">
+                <VisuallyHidden>
+                  <SheetTitle>Menu Navigasi</SheetTitle>
+                </VisuallyHidden>
                 <div className="flex flex-col gap-4 mt-8">
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
-                      to={link.href}
+                      href={link.href}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        'px-4 py-3 text-base font-medium rounded-lg transition-colors',
+                        "px-4 py-3 text-base font-medium rounded-lg transition-colors",
                         isActive(link.href)
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}
                     >
                       {link.label}
                     </Link>
                   ))}
+
                   <div className="border-t border-border pt-4 mt-2">
-                    <Link to="/" onClick={() => setIsOpen(false)}>
+                    <Link href="/admin" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" className="w-full gap-2">
                         <LayoutDashboard className="h-4 w-4" />
                         Admin Panel
@@ -109,4 +128,4 @@ export const Navbar: React.FC = () => {
       </div>
     </header>
   );
-};
+}

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import Image from "next/image";
 import {
   Phone,
   Mail,
@@ -17,10 +17,12 @@ export const Footer: React.FC = () => {
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4 w-48">
-              <img
-                src="/public/logo-white.png"
-                alt=""
-                className="w-full h-full"
+              <Image
+                src="/logo-white.png"
+                alt="Logo Bank Sumsel Babel"
+                width={192}
+                height={48}
+                priority
               />
             </div>
             <p className="text-sm text-background/70 leading-relaxed">
@@ -35,7 +37,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to="/kategori/tabungan"
+                  href="/kategori/tabungan"
                   className="text-sm text-background/70 hover:text-background transition-colors"
                 >
                   Tabungan
@@ -43,7 +45,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  to="/kategori/giro"
+                  href="/kategori/giro"
                   className="text-sm text-background/70 hover:text-background transition-colors"
                 >
                   Giro
@@ -51,7 +53,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  to="/kategori/kredit"
+                  href="/kategori/kredit"
                   className="text-sm text-background/70 hover:text-background transition-colors"
                 >
                   Kredit
@@ -59,7 +61,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  to="/kategori/fasilitas-layanan"
+                  href="/kategori/fasilitas-layanan"
                   className="text-sm text-background/70 hover:text-background transition-colors"
                 >
                   Fasilitas Layanan
@@ -71,7 +73,7 @@ export const Footer: React.FC = () => {
           {/* Contact */}
           <div>
             <h3 className="font-semibold mb-4">Hubungi Kami</h3>
-            <ul className="space-y-3">
+            <ul className="-ml-7 space-y-3">
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 mt-0.5 text-primary" />
                 <span className="text-sm text-background/70">
