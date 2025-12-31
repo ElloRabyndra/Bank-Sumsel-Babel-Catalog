@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-
+import Image from "next/image";
 export const ZoomableContent: React.FC<{
   html: string;
   className?: string;
@@ -13,37 +13,40 @@ export const ZoomableContent: React.FC<{
     []
   );
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [imageItems, setImageItems] = useState<
-    Array<{ src: string; caption: string }>
-  >([]);
   const [isClient, setIsClient] = useState(false);
 
-  const initializedRef = useRef(false);
-
+  // 1. Tandai client-side tanpa memicu error cascading render
   useEffect(() => {
-    // Tandai sebagai client side
-    if (!isClient) {
-      setIsClient(true);
-    }
+    setIsClient(true);
+  }, []);
 
-    // Hanya jalankan parsing jika belum diinisialisasi atau html berubah
+  // 2. Gunakan useMemo untuk parsing data agar tidak memicu setState di dalam Effect
+  const imageItems = useMemo(() => {
+    if (typeof window === "undefined") return [];
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const imgEls = Array.from(doc.querySelectorAll("img"));
 
-    const parsedItems = imgEls
+    return imgEls
       .map((img) => ({
         src: img.getAttribute("src") || "",
         caption: img.getAttribute("alt") || img.getAttribute("title") || "",
       }))
       .filter((i) => i.src);
+  }, [html]);
 
-    setImageItems(parsedItems);
-    initializedRef.current = true;
-  }, [html]); 
+  // 3. Gunakan useMemo untuk textContent agar sinkron
+  const textContent = useMemo(() => {
+    if (typeof window === "undefined" || imageItems.length === 0) return html;
 
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    doc.querySelectorAll("img").forEach((img) => img.remove());
+    return doc.body.innerHTML.trim();
+  }, [html, imageItems]);
 
-  // Jangan render apapun sampai client-side hydration selesai
+  // Jangan render apapun sampai client-side hydration selesai untuk mencegah mismatch
   if (!isClient) {
     return (
       <div
@@ -108,9 +111,11 @@ export const ZoomableContent: React.FC<{
                 onClick={() => openLightbox(idx)}
                 className="shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden border border-border cursor-zoom-in group"
               >
-                <img
+                <Image
                   src={item.src}
                   alt={item.caption || `Langkah ${idx + 1}`}
+                  width={500}
+                  height={500}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
               </button>
@@ -154,9 +159,11 @@ export const ZoomableContent: React.FC<{
               )}
 
               {current?.src && (
-                <img
+                <Image
                   src={current.src}
                   alt={current.caption}
+                  width={500}
+                  height={500}
                   className="max-w-full max-h-[70vh] object-contain rounded-lg"
                 />
               )}

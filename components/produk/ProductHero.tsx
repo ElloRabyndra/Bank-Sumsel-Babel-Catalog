@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ImageLightbox } from "@/components/admin/produk/ImageLightbox";
+import Image from "next/image";
 
 interface ProductHeroProps {
   heroImage: string;
@@ -25,9 +26,11 @@ export function ProductHero({
         className="group w-full"
       >
         <div className="aspect-video rounded-xl overflow-hidden border border-border">
-          <img
+          <Image
             src={heroImage}
             alt={productTitle}
+            width={800}
+            height={450}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -38,7 +41,13 @@ export function ProductHero({
           <DialogTitle>{productTitle}</DialogTitle>
         </VisuallyHidden>
         <DialogContent className="max-w-80 sm:max-w-xl p-0 overflow-hidden rounded-2xl">
-          <img src={heroImage} alt={productTitle} className="w-full h-auto" />
+          <Image
+            src={heroImage}
+            alt={productTitle}
+            width={800}
+            height={450}
+            className="w-full h-auto"
+          />
           <div className="p-4 pt-0 bg-background/95">
             <p className="text-xl font-medium text-foreground">
               {productTitle}

@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { truncate } from "@/lib/utils";
 import { Product } from "@/types";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -21,11 +22,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     >
       <Card className="h-full overflow-hidden card-hover border-border/50 hover:border-primary/30">
         <div className="aspect-16/10 relative overflow-hidden">
-          <img
+          <Image
             src={product.thumbnailUrl}
             alt={product.title}
+            width={500}
+            height={312}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          <div className="absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/20 to-transparent" />
         </div>
         <CardContent className="p-5">
           <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">

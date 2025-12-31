@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getIcon } from "@/lib/utils";
 import { Category } from "@/types";
+import Image from "next/image";
 
 interface CategoryCardProps {
   category: Category;
@@ -26,9 +27,11 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     >
       <Card className="h-full overflow-hidden card-hover border-border/50 hover:border-primary/30">
         <div className="aspect-4/3 relative overflow-hidden">
-          <img
+          <Image
             src={category.thumbnailUrl}
             alt={category.name}
+            width={500}
+            height={500}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/20 to-transparent" />

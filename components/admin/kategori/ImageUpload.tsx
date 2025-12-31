@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface ImageUploadProps {
   value: string;
@@ -97,9 +98,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {value ? (
         <div className="relative group">
-          <img
+          <Image
             src={value}
             alt="Preview"
+            width={400}
+            height={200}
             className="w-full h-48 object-cover rounded-lg border border-border"
           />
           <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">

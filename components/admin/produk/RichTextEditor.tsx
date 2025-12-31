@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import Image from "@tiptap/extension-image";
+import TiptapImage from "@tiptap/extension-image";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
@@ -32,6 +32,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 interface PendingImage {
   url: string;
@@ -86,7 +87,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
       }),
       Underline,
-      Image.configure({
+      TiptapImage.configure({
         HTMLAttributes: {
           class: "content-image",
         },
@@ -340,9 +341,15 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               >
                 {/* Thumbnail kecil */}
                 <div className="relative shrink-0 w-20 h-20 rounded-md overflow-hidden border border-border">
-                  <img
+                  {/* <img
                     src={img.url}
                     alt={`Preview ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  /> */}
+                  <Image
+                    src={img.url}
+                    alt={`Preview ${idx + 1}`}
+                    fill
                     className="w-full h-full object-cover"
                   />
                   <button

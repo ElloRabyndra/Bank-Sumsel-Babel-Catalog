@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Save, X } from "lucide-react";
@@ -44,35 +44,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
 
   const [formData, setFormData] = useState<
     Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
-  >({
-    categoryId: "",
-    title: "",
-    thumbnailUrl: "",
-    shortDescription: "",
-    kenaliProduk: "",
-    namaPenerbit:
-      "PT Bank Pembangunan Daerah Sumatera Selatan dan Bangka Belitung",
-    fiturUtama: "",
-    manfaat: "",
-    risiko: "",
-    persyaratan: "",
-    biaya: "",
-    informasiTambahan: "",
-    featuredImageUrl: "",
-    youtubeVideoUrl: "",
-    galleryImages: [],
-    isPublished: false,
-    orderIndex: products.length + 1,
-  });
-
-  const [hasChanges, setHasChanges] = useState(false);
-
-  // Initialize form data only once when component mounts
-  const initializedRef = React.useRef(false);
-
-  useEffect(() => {
-    if (existingProduct && !initializedRef.current) {
-      setFormData({
+  >(() => {
+    if (existingProduct) {
+      return {
         categoryId: existingProduct.categoryId,
         title: existingProduct.title,
         thumbnailUrl: existingProduct.thumbnailUrl,
@@ -90,10 +64,32 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
         galleryImages: existingProduct.galleryImages,
         isPublished: existingProduct.isPublished,
         orderIndex: existingProduct.orderIndex,
-      });
-      initializedRef.current = true;
+      };
     }
-  }, [existingProduct]);
+
+    return {
+      categoryId: "",
+      title: "",
+      thumbnailUrl: "",
+      shortDescription: "",
+      kenaliProduk: "",
+      namaPenerbit:
+        "PT Bank Pembangunan Daerah Sumatera Selatan dan Bangka Belitung",
+      fiturUtama: "",
+      manfaat: "",
+      risiko: "",
+      persyaratan: "",
+      biaya: "",
+      informasiTambahan: "",
+      featuredImageUrl: "",
+      youtubeVideoUrl: "",
+      galleryImages: [],
+      isPublished: false,
+      orderIndex: products.length + 1,
+    };
+  });
+
+  const [hasChanges, setHasChanges] = useState(false);
 
   const updateField = useCallback(
     <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {

@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+
 
 interface ImageLightboxProps {
   images: string[];
@@ -59,10 +61,12 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
             onClick={() => openLightbox(index)}
             className="shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <img
+            <Image
               src={image}
               alt={`Gallery ${index + 1}`}
               className="w-full h-full object-cover"
+              width={100}
+              height={100}
             />
           </button>
         ))}
@@ -108,10 +112,12 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
             )}
 
             {/* Image */}
-            <img
+            <Image
               src={images[currentIndex]}
               alt={`Gallery ${currentIndex + 1}`}
               className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              width={800}
+              height={600}
             />
 
             {/* Counter */}
