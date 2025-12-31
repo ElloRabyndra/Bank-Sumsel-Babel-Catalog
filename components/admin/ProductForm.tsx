@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +39,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
 
   const isEditing = !!productId;
   const existingProduct = isEditing ? getProductById(productId) : undefined;
+
+  if (isEditing && !existingProduct) notFound();
 
   const [formData, setFormData] = useState<
     Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
