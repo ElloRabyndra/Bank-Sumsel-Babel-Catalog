@@ -1,6 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronRight, Home } from 'lucide-react';
+"use client";
+import React from "react";
+import Link from "next/link"
+import { ChevronRight, Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 
 interface BreadcrumbItem {
   label: string;
@@ -25,7 +26,10 @@ export const PageBreadcrumb: React.FC<PageBreadcrumbProps> = ({ items }) => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+            <Link
+              href="/"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+            >
               <Home className="w-4 h-4" />
               <span className="sr-only sm:not-sr-only">Beranda</span>
             </Link>
@@ -39,7 +43,10 @@ export const PageBreadcrumb: React.FC<PageBreadcrumbProps> = ({ items }) => {
             <BreadcrumbItem>
               {item.href ? (
                 <BreadcrumbLink asChild>
-                  <Link to={item.href} className="text-muted-foreground hover:text-foreground">
+                  <Link
+                    href={item.href}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
                     {item.label}
                   </Link>
                 </BreadcrumbLink>
