@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Image from "next/image";
+
 export const ZoomableContent: React.FC<{
   html: string;
   className?: string;
@@ -14,13 +15,7 @@ export const ZoomableContent: React.FC<{
   );
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Gunakan cara ini untuk cek client-side tanpa useEffect + setState
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Parsing data menggunakan useMemo (Sudah benar)
+  // Parsing data menggunakan useMemo
   const imageItems = useMemo(() => {
     if (typeof window === "undefined") return [];
     const parser = new DOMParser();
@@ -33,10 +28,6 @@ export const ZoomableContent: React.FC<{
       }))
       .filter((i) => i.src);
   }, [html]);
-
-  // JIKA linter masih komplain di baris setIsClient(true),
-  // hapus state isClient dan useEffect-nya, lalu gunakan:
-  // if (typeof window === 'undefined') return <div dangerouslySetInnerHTML={{ __html: html }} />;
 
   const hasStepImages = imageItems.length > 0;
 
@@ -59,10 +50,14 @@ export const ZoomableContent: React.FC<{
   // If content has step images, render as step cards
   if (hasStepImages) {
     // Remove images from original HTML for text-only content
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    doc.querySelectorAll("img").forEach((img) => img.remove());
-    const textContent = doc.body.innerHTML.trim();
+    const parser = typeof window !== "undefined" ? new DOMParser() : null;
+    const doc = parser ? parser.parseFromString(html, "text/html") : null;
+    
+    if (doc) {
+      doc.querySelectorAll("img").forEach((img) => img.remove());
+    }
+    
+    const textContent = doc ? doc.body.innerHTML.trim() : "";
 
     return (
       <>
