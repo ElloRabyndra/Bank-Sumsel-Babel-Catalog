@@ -1,15 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+"use client";
+import React, { useState, useCallback, useEffect } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ImageLightboxProps {
   images: string[];
   className?: string;
 }
 
-export const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, className }) => {
+export const ImageLightbox: React.FC<ImageLightboxProps> = ({
+  images,
+  className,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -33,13 +38,13 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, className 
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') goToPrevious();
-      if (e.key === 'ArrowRight') goToNext();
-      if (e.key === 'Escape') closeLightbox();
+      if (e.key === "ArrowLeft") goToPrevious();
+      if (e.key === "ArrowRight") goToNext();
+      if (e.key === "Escape") closeLightbox();
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, goToPrevious, goToNext]);
 
   if (images.length === 0) return null;
@@ -47,7 +52,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, className 
   return (
     <>
       {/* Thumbnail Strip */}
-      <div className={cn('flex gap-2 overflow-x-auto pb-2', className)}>
+      <div className={cn("flex gap-2 overflow-x-auto pb-2", className)}>
         {images.map((image, index) => (
           <button
             key={index}
@@ -66,6 +71,9 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, className 
       {/* Lightbox Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-background/95 backdrop-blur-sm border-0">
+          <VisuallyHidden>
+            <DialogTitle>{`Langkah ${currentIndex + 1}`}</DialogTitle>
+          </VisuallyHidden>
           <div className="relative flex items-center justify-center min-h-[80vh]">
             {/* Close Button */}
             <Button
