@@ -35,7 +35,7 @@ const Index: React.FC = () => {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-primary/80 py-20 lg:py-28">
+        <section className="relative overflow-hidden bg-linear-to-br from-primary via-primary to-primary/80 py-20 lg:py-28">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-40"></div>
 
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
@@ -112,13 +112,13 @@ const Index: React.FC = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <Card className="h-full overflow-hidden card-hover border-border/50 hover:border-primary/30">
-                    <div className="aspect-[4/3] relative overflow-hidden">
+                    <div className="aspect-4/3 relative overflow-hidden">
                       <img
                         src={category.thumbnailUrl}
                         alt={category.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/20 to-transparent" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl bg-primary/90 flex items-center justify-center text-primary-foreground">
