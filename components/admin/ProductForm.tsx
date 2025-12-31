@@ -67,8 +67,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
 
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Initialize form data only once when component mounts
+  const initializedRef = React.useRef(false);
+
   useEffect(() => {
-    if (existingProduct && !hasChanges) {
+    if (existingProduct && !initializedRef.current) {
       setFormData({
         categoryId: existingProduct.categoryId,
         title: existingProduct.title,
@@ -88,8 +91,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
         isPublished: existingProduct.isPublished,
         orderIndex: existingProduct.orderIndex,
       });
+      initializedRef.current = true;
     }
-  }, [existingProduct?.id]); 
+  }, [existingProduct]);
 
   const updateField = useCallback(
     <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {

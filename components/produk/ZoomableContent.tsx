@@ -1,18 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Phone, Building, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Navbar } from "@/components/shared/Navbar";
-import { Footer } from "@/components/shared/Footer";
-import { PageBreadcrumb } from "@/components/kategori/PageBreadcrumb";
-import { YouTubeEmbed } from "@/components/produk/YouTubeEmbed";
-import { ImageLightbox } from "@/components/admin/produk/ImageLightbox";
-import { useCatalog } from "@/contexts/CatalogContext";
-import { truncate } from "@/lib/utils";
+
 export const ZoomableContent: React.FC<{
   html: string;
   className?: string;
@@ -27,12 +18,15 @@ export const ZoomableContent: React.FC<{
   >([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Pastikan hanya render di client
+  const initializedRef = useRef(false);
+
   useEffect(() => {
+    // Tandai sebagai client side
     if (!isClient) {
       setIsClient(true);
     }
 
+    // Hanya jalankan parsing jika belum diinisialisasi atau html berubah
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const imgEls = Array.from(doc.querySelectorAll("img"));
@@ -45,7 +39,9 @@ export const ZoomableContent: React.FC<{
       .filter((i) => i.src);
 
     setImageItems(parsedItems);
-  }, [html]);
+    initializedRef.current = true;
+  }, [html]); 
+
 
   // Jangan render apapun sampai client-side hydration selesai
   if (!isClient) {
