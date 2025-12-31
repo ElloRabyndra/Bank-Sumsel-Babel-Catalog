@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import * as Icons from "lucide-react";
+import React from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -62,4 +64,12 @@ export const stripHtml = (html: string): string => {
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText || '';
+};
+
+// render Lucide icon
+export const getIcon = (iconName: string, className?: string): React.ReactElement | null => {
+  const IconComponent = Icons[
+    iconName as keyof typeof Icons
+  ] as React.ComponentType<{ className?: string }>;
+  return IconComponent ? React.createElement(IconComponent, { className }) : null;
 };
