@@ -72,7 +72,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onChange,
   label,
   required = false,
-  placeholder = "Tulis konten di sini...",
   className,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -341,15 +340,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               >
                 {/* Thumbnail kecil */}
                 <div className="relative shrink-0 w-20 h-20 rounded-md overflow-hidden border border-border">
-                  {/* <img
-                    src={img.url}
-                    alt={`Preview ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  /> */}
                   <Image
                     src={img.url}
                     alt={`Preview ${idx + 1}`}
                     fill
+                    unoptimized 
                     className="w-full h-full object-cover"
                   />
                   <button

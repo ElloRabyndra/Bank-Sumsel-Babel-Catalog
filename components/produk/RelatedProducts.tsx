@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Product } from "@/types";
 import { truncate } from "@/lib/utils";
-
+import Image from "next/image";
 interface RelatedProductsProps {
   products: Product[];
 }
@@ -21,9 +21,11 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
           <Link key={product.id} href={`/produk/${product.slug}`}>
             <Card className="h-full hover:shadow-lg transition-shadow">
               <div className="aspect-video overflow-hidden">
-                <img
+                <Image
                   src={product.thumbnailUrl}
                   alt={product.title}
+                  width={500}
+                  height={312}
                   className="w-full h-full object-cover"
                 />
               </div>

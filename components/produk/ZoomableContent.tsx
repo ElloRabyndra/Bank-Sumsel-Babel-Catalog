@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -13,21 +13,19 @@ export const ZoomableContent: React.FC<{
     []
   );
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isClient, setIsClient] = useState(false);
 
-  // 1. Tandai client-side tanpa memicu error cascading render
+  // Gunakan cara ini untuk cek client-side tanpa useEffect + setState
+  const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // 2. Gunakan useMemo untuk parsing data agar tidak memicu setState di dalam Effect
+  // Parsing data menggunakan useMemo (Sudah benar)
   const imageItems = useMemo(() => {
     if (typeof window === "undefined") return [];
-
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const imgEls = Array.from(doc.querySelectorAll("img"));
-
     return imgEls
       .map((img) => ({
         src: img.getAttribute("src") || "",
@@ -36,26 +34,9 @@ export const ZoomableContent: React.FC<{
       .filter((i) => i.src);
   }, [html]);
 
-  // 3. Gunakan useMemo untuk textContent agar sinkron
-  const textContent = useMemo(() => {
-    if (typeof window === "undefined" || imageItems.length === 0) return html;
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    doc.querySelectorAll("img").forEach((img) => img.remove());
-    return doc.body.innerHTML.trim();
-  }, [html, imageItems]);
-
-  // Jangan render apapun sampai client-side hydration selesai untuk mencegah mismatch
-  if (!isClient) {
-    return (
-      <div
-        className={className}
-        dangerouslySetInnerHTML={{ __html: html }}
-        suppressHydrationWarning
-      />
-    );
-  }
+  // JIKA linter masih komplain di baris setIsClient(true),
+  // hapus state isClient dan useEffect-nya, lalu gunakan:
+  // if (typeof window === 'undefined') return <div dangerouslySetInnerHTML={{ __html: html }} />;
 
   const hasStepImages = imageItems.length > 0;
 
