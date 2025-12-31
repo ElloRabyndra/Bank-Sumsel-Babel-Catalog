@@ -73,7 +73,7 @@ export default async function CategoryPage({
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <Card className="h-full overflow-hidden card-hover border-border/50 hover:border-primary/30">
-                    <div className="aspect-[16/10] relative overflow-hidden">
+                    <div className="aspect-16/10 relative overflow-hidden">
                       <img
                         src={product.thumbnailUrl}
                         alt={product.title}
