@@ -68,7 +68,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    if (existingProduct) {
+    if (existingProduct && !hasChanges) {
       setFormData({
         categoryId: existingProduct.categoryId,
         title: existingProduct.title,
@@ -89,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
         orderIndex: existingProduct.orderIndex,
       });
     }
-  }, [existingProduct]);
+  }, [existingProduct?.id]); 
 
   const updateField = useCallback(
     <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {

@@ -29,7 +29,9 @@ export const ZoomableContent: React.FC<{
 
   // Pastikan hanya render di client
   useEffect(() => {
-    setIsClient(true);
+    if (!isClient) {
+      setIsClient(true);
+    }
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");

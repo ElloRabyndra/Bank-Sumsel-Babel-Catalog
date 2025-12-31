@@ -47,6 +47,25 @@ interface RichTextEditorProps {
   className?: string;
 }
 
+const ToolbarButton = React.memo<{
+  onClick: () => void;
+  isActive?: boolean;
+  children: React.ReactNode;
+  title: string;
+}>(({ onClick, isActive, children, title }) => (
+  <Button
+    type="button"
+    variant={isActive ? "default" : "ghost"}
+    size="sm"
+    onClick={onClick}
+    title={title}
+    className="h-8 w-8 p-0"
+  >
+    {children}
+  </Button>
+));
+ToolbarButton.displayName = "ToolbarButton";
+
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
@@ -181,29 +200,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       <div className="border rounded-lg p-4 min-h-50 animate-pulse bg-muted" />
     );
   }
-
-  const ToolbarButton = ({
-    onClick,
-    isActive,
-    children,
-    title,
-  }: {
-    onClick: () => void;
-    isActive?: boolean;
-    children: React.ReactNode;
-    title: string;
-  }) => (
-    <Button
-      type="button"
-      variant={isActive ? "default" : "ghost"}
-      size="sm"
-      onClick={onClick}
-      title={title}
-      className="h-8 w-8 p-0"
-    >
-      {children}
-    </Button>
-  );
 
   return (
     <div className={cn("space-y-2", className)}>
