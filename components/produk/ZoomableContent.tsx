@@ -6,11 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { ImageLightbox } from "@/components/ImageLightbox";
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
+import { PageBreadcrumb } from "@/components/kategori/PageBreadcrumb";
+import { YouTubeEmbed } from "@/components/produk/YouTubeEmbed";
+import { ImageLightbox } from "@/components/admin/produk/ImageLightbox";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { truncate } from "@/lib/utils";
 export const ZoomableContent: React.FC<{

@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ImageUpload } from "@/components/ImageUpload";
-import { RichTextEditor } from "@/components/RichTextEditor";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { ImageUpload } from "@/components/admin/kategori/ImageUpload";
+import { RichTextEditor } from "@/components/admin/produk/RichTextEditor";
+import { YouTubeEmbed } from "@/components/produk/YouTubeEmbed";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { useToast } from "@/hooks/use-toast";
 import { extractYouTubeID } from "@/lib/utils";

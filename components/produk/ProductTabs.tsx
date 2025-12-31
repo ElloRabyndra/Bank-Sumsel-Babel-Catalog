@@ -1,6 +1,6 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ZoomableContent } from "@/components/ZoomableContent";
+import { ZoomableContent } from "@/components/produk/ZoomableContent";
 import type { Product } from "@/types";
 
 interface ProductTabsProps {

@@ -1,19 +1,23 @@
 // app/produk/[slug]/page.tsx
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { Phone, Building } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { PageBreadcrumb } from '@/components/PageBreadcrumb';
-import { YouTubeEmbed } from '@/components/YouTubeEmbed';
-import { ImageLightbox } from '@/components/ImageLightbox';
-import { getProductBySlug, getCategoryById, getProductsByCategory } from '@/lib/catalog';
-import { truncate } from '@/lib/utils';
-import { ProductTabs } from './ProductTabs';
-import { ProductHero } from './ProductHero';
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Phone, Building } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
+import { PageBreadcrumb } from "@/components/kategori/PageBreadcrumb";
+import { YouTubeEmbed } from "@/components/produk/YouTubeEmbed";
+import { ImageLightbox } from "@/components/admin/produk/ImageLightbox";
+import {
+  getProductBySlug,
+  getCategoryById,
+  getProductsByCategory,
+} from "@/lib/catalog";
+import { truncate } from "@/lib/utils";
+import { ProductTabs } from "../../../components/produk/ProductTabs";
+import { ProductHero } from "../../../components/produk/ProductHero";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = getProductBySlug(slug);
 
   if (!product) {
-    return { title: 'Produk tidak ditemukan' };
+    return { title: "Produk tidak ditemukan" };
   }
 
   return {
@@ -57,8 +61,10 @@ export default async function ProductDetailPage({ params }: Props) {
           {/* Breadcrumb */}
           <PageBreadcrumb
             items={[
-              { label: 'Beranda', href: '/' },
-              ...(category ? [{ label: category.name, href: `/kategori/${category.slug}` }] : []),
+              { label: "Beranda", href: "/" },
+              ...(category
+                ? [{ label: category.name, href: `/kategori/${category.slug}` }]
+                : []),
               { label: product.title },
             ]}
           />

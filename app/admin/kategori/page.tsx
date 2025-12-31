@@ -43,7 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { ImageUpload } from "@/components/ImageUpload";
+import { ImageUpload } from "@/components/admin/kategori/ImageUpload";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { useToast } from "@/hooks/use-toast";
 import { Category, LucideIconName } from "@/types";

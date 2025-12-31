@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { ImageLightbox } from "@/components/ImageLightbox";
+import { ImageLightbox } from "@/components/admin/produk/ImageLightbox";
 
 interface ProductHeroProps {
   heroImage: string;

@@ -6,8 +6,8 @@ import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { LucideIconName } from "@/types";
 

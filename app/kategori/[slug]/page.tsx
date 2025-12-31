@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
+import { PageBreadcrumb } from "@/components/kategori/PageBreadcrumb";
 import { getCategoryBySlug, getProductsByCategory } from "@/lib/catalog";
 import { truncate } from "@/lib/utils";
 
