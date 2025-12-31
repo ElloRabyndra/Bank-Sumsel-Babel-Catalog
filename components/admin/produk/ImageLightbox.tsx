@@ -57,7 +57,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
           <button
             key={index}
             onClick={() => openLightbox(index)}
-            className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+            className="shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <img
               src={image}
