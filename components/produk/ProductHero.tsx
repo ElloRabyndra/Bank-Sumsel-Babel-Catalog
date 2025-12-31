@@ -37,10 +37,10 @@ export function ProductHero({
         <VisuallyHidden>
           <DialogTitle>{productTitle}</DialogTitle>
         </VisuallyHidden>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <DialogContent className="max-w-80 sm:max-w-xl p-0 overflow-hidden rounded-2xl">
           <img src={heroImage} alt={productTitle} className="w-full h-auto" />
-          <div className="p-4 bg-background/95">
-            <p className="text-lg font-medium text-foreground">
+          <div className="p-4 pt-0 bg-background/95">
+            <p className="text-xl font-medium text-foreground">
               {productTitle}
             </p>
           </div>
