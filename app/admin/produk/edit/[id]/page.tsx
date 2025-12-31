@@ -1,9 +1,11 @@
 import ProductForm from "@/components/admin/ProductForm";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; 
 }
 
-export default function EditProductPage({ params }: PageProps) {
-  return <ProductForm productId={params.id} />;
+export default async function EditProductPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  
+  return <ProductForm productId={resolvedParams.id} />;
 }
