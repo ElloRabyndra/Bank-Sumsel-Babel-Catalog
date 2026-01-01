@@ -43,7 +43,7 @@ export const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
         {category.description}
       </TableCell>
       <TableCell>{productCount}</TableCell>
-      <TableCell className="text-right">
+      <TableCell className="text-center">
         <div className="flex justify-end gap-2">
           <Button
             variant="ghost"

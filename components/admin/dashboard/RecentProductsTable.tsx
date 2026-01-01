@@ -41,9 +41,7 @@ export function RecentProductsTable({
             <TableHeader>
               <TableRow>
                 <TableHead>Produk</TableHead>
-                <TableHead className="hidden sm:table-cell">
-                  Kategori
-                </TableHead>
+                <TableHead className="hidden sm:table-cell">Kategori</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Diperbarui
                 </TableHead>

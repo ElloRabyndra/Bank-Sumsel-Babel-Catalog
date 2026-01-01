@@ -55,8 +55,8 @@ export const ProductList: React.FC<ProductListProps> = ({
                   <TableHead className="hidden lg:table-cell">
                     Diperbarui
                   </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableHead className="hidden sm:table-cell">Status</TableHead>
+                  <TableHead className="text-center">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

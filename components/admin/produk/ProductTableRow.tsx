@@ -50,7 +50,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
       <TableCell className="hidden lg:table-cell text-muted-foreground">
         {formatDate(product.updatedAt)}
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden sm:table-cell">
         <Badge variant={product.isPublished ? "default" : "secondary"}>
           {product.isPublished ? "Published" : "Draft"}
         </Badge>
