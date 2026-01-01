@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Save, X } from "lucide-react";
@@ -24,8 +24,8 @@ import { RichTextEditor } from "@/components/admin/produk/RichTextEditor";
 import { YouTubeEmbed } from "@/components/produk/YouTubeEmbed";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { useToast } from "@/hooks/use-toast";
+import { useProductForm } from "@/hooks/useProductForm";
 import { extractYouTubeID } from "@/lib/utils";
-import { Product } from "@/types";
 
 interface ProductFormProps {
   productId?: string;
@@ -42,11 +42,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
 
   if (isEditing && !existingProduct) notFound();
 
-  const [formData, setFormData] = useState<
-    Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
-  >(() => {
-    if (existingProduct) {
-      return {
+  // Prepare initial data
+  const initialData = existingProduct
+    ? {
         categoryId: existingProduct.categoryId,
         title: existingProduct.title,
         thumbnailUrl: existingProduct.thumbnailUrl,
@@ -64,10 +62,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
         galleryImages: existingProduct.galleryImages,
         isPublished: existingProduct.isPublished,
         orderIndex: existingProduct.orderIndex,
-      };
-    }
+      }
+    : undefined;
 
-    return {
+  // Use custom hook for form management
+  const { formData, hasChanges, updateField, handleSubmit } = useProductForm({
+    initialData: initialData || {
       categoryId: "",
       title: "",
       thumbnailUrl: "",
@@ -86,66 +86,21 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
       galleryImages: [],
       isPublished: false,
       orderIndex: products.length + 1,
-    };
-  });
-
-  const [hasChanges, setHasChanges] = useState(false);
-
-  const updateField = useCallback(
-    <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
-      setFormData((prev) => ({ ...prev, [key]: value }));
-      setHasChanges(true);
     },
-    []
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.categoryId) {
-      toast({
-        title: "Error",
-        description: "Kategori wajib dipilih",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formData.title.trim()) {
-      toast({
-        title: "Error",
-        description: "Judul produk wajib diisi",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formData.thumbnailUrl) {
-      toast({
-        title: "Error",
-        description: "Thumbnail wajib diupload",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formData.kenaliProduk || formData.kenaliProduk === "<p></p>") {
-      toast({
-        title: "Error",
-        description: "Kenali Produk wajib diisi",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isEditing && productId) {
-      updateProduct(productId, formData);
-      toast({ title: "Berhasil", description: "Produk berhasil diperbarui" });
-    } else {
-      addProduct(formData);
-      toast({ title: "Berhasil", description: "Produk berhasil ditambahkan" });
-    }
-
-    setHasChanges(false);
-    router.push("/admin/produk");
-  };
+    onSubmit: (data) => {
+      if (isEditing && productId) {
+        updateProduct(productId, data);
+        toast({ title: "Berhasil", description: "Produk berhasil diperbarui" });
+      } else {
+        addProduct(data);
+        toast({
+          title: "Berhasil",
+          description: "Produk berhasil ditambahkan",
+        });
+      }
+      router.push("/admin/produk");
+    },
+  });
 
   const handleCancel = () => {
     if (hasChanges) {

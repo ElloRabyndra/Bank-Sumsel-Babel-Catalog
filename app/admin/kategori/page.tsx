@@ -1,4 +1,3 @@
-// app/admin/kategori/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -8,6 +7,7 @@ import { CategoryFormDialog } from "@/components/admin/kategori/CategoryFormDial
 import { DeleteCategoryDialog } from "@/components/admin/kategori/DeleteCategoryDialog";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { useToast } from "@/hooks/use-toast";
+import { useDialogState } from "@/hooks/useDialogState";
 import { Category, LucideIconName } from "@/types";
 
 const AdminCategories = () => {
@@ -20,9 +20,9 @@ const AdminCategories = () => {
   } = useCatalog();
   const { toast } = useToast();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  // Use custom hooks for dialog management
+  const formDialog = useDialogState<Category>();
+  const deleteDialog = useDialogState<string>();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,23 +38,21 @@ const AdminCategories = () => {
       icon: "Wallet",
       thumbnailUrl: "",
     });
-    setEditingCategory(null);
   };
 
   const openCreate = () => {
     resetForm();
-    setIsDialogOpen(true);
+    formDialog.open();
   };
 
   const openEdit = (category: Category) => {
-    setEditingCategory(category);
     setFormData({
       name: category.name,
       description: category.description,
       icon: category.icon as LucideIconName,
       thumbnailUrl: category.thumbnailUrl,
     });
-    setIsDialogOpen(true);
+    formDialog.open(category);
   };
 
   const handleFormChange = (data: Partial<typeof formData>) => {
@@ -82,10 +80,12 @@ const AdminCategories = () => {
       return;
     }
 
-    if (editingCategory) {
-      updateCategory(editingCategory.id, formData);
+    if (formDialog.data) {
+      // Edit mode
+      updateCategory(formDialog.data.id, formData);
       toast({ title: "Berhasil", description: "Kategori berhasil diperbarui" });
     } else {
+      // Create mode
       addCategory({ ...formData, orderIndex: categories.length + 1 });
       toast({
         title: "Berhasil",
@@ -93,15 +93,15 @@ const AdminCategories = () => {
       });
     }
 
-    setIsDialogOpen(false);
+    formDialog.close();
     resetForm();
   };
 
   const handleDelete = () => {
-    if (deleteId) {
-      deleteCategory(deleteId);
+    if (deleteDialog.data) {
+      deleteCategory(deleteDialog.data);
       toast({ title: "Berhasil", description: "Kategori berhasil dihapus" });
-      setDeleteId(null);
+      deleteDialog.close();
     }
   };
 
@@ -114,22 +114,27 @@ const AdminCategories = () => {
           categories={categories}
           getProductCount={getProductCount}
           onEdit={openEdit}
-          onDelete={setDeleteId}
+          onDelete={(id) => deleteDialog.open(id)}
         />
       </div>
 
       <CategoryFormDialog
-        isOpen={isDialogOpen}
-        isEditing={!!editingCategory}
+        isOpen={formDialog.isOpen}
+        isEditing={!!formDialog.data}
         formData={formData}
-        onOpenChange={setIsDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            formDialog.close();
+            resetForm();
+          }
+        }}
         onSubmit={handleSubmit}
         onFormChange={handleFormChange}
       />
 
       <DeleteCategoryDialog
-        isOpen={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
+        isOpen={deleteDialog.isOpen}
+        onOpenChange={(open) => !open && deleteDialog.close()}
         onConfirm={handleDelete}
       />
     </>

@@ -4,11 +4,13 @@ import React, {
   useContext,
   useReducer,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import { Category, Product } from "@/types";
 import { initialCategories, createInitialProducts } from "@/data/mockData";
 import { generateId, generateSlug } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 interface CatalogState {
   categories: Category[];
@@ -54,9 +56,8 @@ interface CatalogContextType extends CatalogState {
   searchProducts: (query: string) => Product[];
   getPublishedProducts: () => Product[];
   getProductCount: (categoryId: string) => number;
+  isLoading: boolean;
 }
-
-const STORAGE_KEY = "bsb_catalog_data";
 
 const catalogReducer = (
   state: CatalogState,
@@ -160,48 +161,47 @@ const catalogReducer = (
 
 const CatalogContext = createContext<CatalogContextType | undefined>(undefined);
 
+const STORAGE_KEY = "bsb_catalog_data";
+
 export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(catalogReducer, {
-    categories: [],
-    products: [],
+  // Gunakan custom hook untuk localStorage
+  const {
+    value: storedData,
+    setValue: setStoredData,
+    isLoading,
+  } = useLocalStorage<CatalogState>(STORAGE_KEY, {
+    categories: initialCategories,
+    products: createInitialProducts(initialCategories),
   });
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        dispatch({ type: "SET_DATA", payload: parsed });
-      } catch {
-        // If parsing fails, use initial data
-        const cats = initialCategories;
-        const prods = createInitialProducts(cats);
-        dispatch({
-          type: "SET_DATA",
-          payload: { categories: cats, products: prods },
-        });
-      }
-    } else {
-      // First time: use initial mock data
-      const cats = initialCategories;
-      const prods = createInitialProducts(cats);
-      dispatch({
-        type: "SET_DATA",
-        payload: { categories: cats, products: prods },
-      });
-    }
-  }, []);
+  // Ref untuk track apakah sudah initialize
+  const isInitialized = useRef(false);
 
-  // Save to localStorage whenever state changes
-  useEffect(() => {
-    if (state.categories.length > 0 || state.products.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-  }, [state]);
+  const [state, dispatch] = useReducer(catalogReducer, storedData);
 
+  // Load initial data HANYA SEKALI saat pertama kali mount
+  useEffect(() => {
+    if (!isLoading && !isInitialized.current) {
+      dispatch({ type: "SET_DATA", payload: storedData });
+      isInitialized.current = true;
+    }
+  }, [isLoading, storedData]);
+
+  // Sync state dengan localStorage setiap kali state berubah
+  // TAPI hanya setelah initialization selesai
+  useEffect(() => {
+    if (
+      isInitialized.current &&
+      !isLoading &&
+      (state.categories.length > 0 || state.products.length > 0)
+    ) {
+      setStoredData(state);
+    }
+  }, [state, setStoredData, isLoading]);
+
+  // Category methods
   const addCategory = (
     data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
   ) => {
@@ -224,6 +224,7 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
     return state.categories.find((cat) => cat.id === id);
   };
 
+  // Product methods
   const addProduct = (
     data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
   ) => {
@@ -295,6 +296,7 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
         searchProducts,
         getPublishedProducts,
         getProductCount,
+        isLoading,
       }}
     >
       {children}
