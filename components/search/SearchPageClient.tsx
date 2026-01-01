@@ -19,6 +19,7 @@ import { Footer } from "../shared/Footer";
 import { PageBreadcrumb } from "../kategori/PageBreadcrumb";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { truncate } from "@/lib/utils";
+import Image from "next/image";
 
 type Props = {
   initialQuery: string;
@@ -137,9 +138,11 @@ const SearchPageClient: React.FC<Props> = ({ initialQuery }) => {
                   >
                     <Card className="h-full overflow-hidden card-hover border-border/50 hover:border-primary/30">
                       <div className="aspect-16/10 relative overflow-hidden">
-                        <img
+                        <Image
                           src={product.thumbnailUrl}
                           alt={product.title}
+                          width={500}
+                          height={500}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         {category && (
