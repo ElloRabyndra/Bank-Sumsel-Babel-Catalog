@@ -116,7 +116,7 @@ const SearchPageClient: React.FC<Props> = ({ initialQuery }) => {
             {/* Results */}
             {initialQuery && (
               <p className="text-muted-foreground mb-6">
-                {results.length} hasil untuk "{initialQuery}"
+                {results.length} hasil untuk &quot;{initialQuery}&quot;
                 {categoryFilter !== "all" &&
                   ` dalam ${
                     categories.find((c) => c.id === categoryFilter)?.name
