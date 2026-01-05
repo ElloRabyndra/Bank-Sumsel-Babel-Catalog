@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 interface ClientOnlyProps {
   children: React.ReactNode;
@@ -9,12 +9,14 @@ interface ClientOnlyProps {
 const ClientOnly: React.FC<ClientOnlyProps> = ({ children }) => {
   const [hasMounted, setHasMounted] = useState(false);
 
-  useLayoutEffect(() => {
-    setHasMounted(true);
+  useEffect(() => {
+    queueMicrotask(() => {
+      setHasMounted(true);
+    });
   }, []);
 
   if (!hasMounted) {
-    return null; 
+    return null; // Atau tampilkan UI placeholder/loading
   }
 
   return <>{children}</>;
