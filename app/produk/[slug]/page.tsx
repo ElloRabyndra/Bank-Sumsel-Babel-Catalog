@@ -1,6 +1,7 @@
-// app/produk/[slug]/page.tsx
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
+"use client"; 
+
+import { useEffect, useState } from "react";
+import { notFound, useParams } from "next/navigation";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { PageBreadcrumb } from "@/components/kategori/PageBreadcrumb";
@@ -8,47 +9,57 @@ import { ProductHeader } from "@/components/produk/ProductHeader";
 import { ProductVideoSection } from "@/components/produk/ProductVideoSection";
 import { ProductTabs } from "@/components/produk/ProductTabs";
 import { RelatedProducts } from "@/components/produk/RelatedProducts";
-import {
-  getProductBySlug,
-  getCategoryById,
-  getProductsByType
-} from "@/lib/catalog";
+import { useCatalog } from "@/contexts/CatalogContext"; 
+import { Product } from "@/types";
 
-type Props = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
+export default function ProductDetailPage() {
+  const params = useParams();
+  const slug = typeof params.slug === "string" ? params.slug : "";
 
-  if (!product) {
-    return { title: "Produk tidak ditemukan" };
+  const { getProductBySlug, getProductsByType, isLoading } = useCatalog();
+  
+  // State lokal untuk menyimpan data produk yang ditemukan
+  const [product, setProduct] = useState<Product | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (!isLoading && slug) {
+      const foundProduct = getProductBySlug(slug);
+      setProduct(foundProduct); 
+    }
+  }, [slug, getProductBySlug, isLoading]);
+
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.title} - Bank Sumsel Babel`;
+    } else if (!isLoading) {
+      document.title = "Produk tidak ditemukan - Bank Sumsel Babel";
+    }
+  }, [product, isLoading]);
+
+  if (isLoading || product === undefined) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center">
+          <p className="text-lg">Memuat produk...</p>
+        </main>
+        <Footer />
+      </div>
+    );
   }
-
-  return {
-    title: `${product.title} - Bank Sumsel Babel`,
-    description: product.shortDescription,
-  };
-}
-
-export default async function ProductDetailPage({ params }: Props) {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const category = getCategoryById(product.categoryId);
-  // Get related products of same type
   const relatedProducts = getProductsByType(product.type)
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
   const heroImage = product.featuredImageUrl || product.thumbnailUrl;
-
   const isLayanan = product.type === "layanan";
 
-  // Build breadcrumb items
   const breadcrumbItems = [
     { label: "Beranda", href: "/" },
     { label: isLayanan ? "Layanan" : "Produk", href: "/" },
@@ -62,13 +73,9 @@ export default async function ProductDetailPage({ params }: Props) {
       <main className="flex-1 py-8 md:py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           <PageBreadcrumb items={breadcrumbItems} />
-
           <ProductHeader product={product} heroImage={heroImage} />
-
           <ProductVideoSection videoUrl={product.youtubeVideoUrl} />
-
           <ProductTabs product={product} />
-
           <RelatedProducts products={relatedProducts} productType={product.type} />
         </div>
       </main>

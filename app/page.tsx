@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Package, HandHelping, ChevronDown } from "lucide-react";
+import ClientOnly from "@/components/shared/ClientOnly";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/shared/Navbar";
@@ -113,9 +114,12 @@ const Index: React.FC = () => {
                     <h2 className="text-xl md:text-2xl font-bold text-foreground">
                       Produk
                     </h2>
-                    <p className="text-muted-foreground text-sm md:text-base">
-                      {produkList.length} produk perbankan untuk kebutuhan Anda
-                    </p>
+                    <ClientOnly>
+                      <p className="text-muted-foreground text-sm md:text-base">
+                        {produkList.length} produk perbankan untuk kebutuhan
+                        Anda
+                      </p>
+                    </ClientOnly>
                   </div>
                 </div>
                 <ChevronDown
@@ -137,35 +141,37 @@ const Index: React.FC = () => {
               >
                 <div className="overflow-hidden">
                   <div className="p-6 pt-0 border-t border-border/50">
-                    {produkList.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {produkList.map((product, index) => (
-                          <Link
-                            key={product.id}
-                            href={`/produk/${product.slug}`}
-                            className="group animate-slide-up"
-                            style={{ animationDelay: `${index * 0.03}s` }}
-                          >
-                            <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
-                              <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
-                                <img
-                                  src={product.thumbnailUrl}
-                                  alt={product.title}
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
+                    <ClientOnly>
+                      {produkList.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                          {produkList.map((product, index) => (
+                            <Link
+                              key={product.id}
+                              href={`/produk/${product.slug}`}
+                              className="group animate-slide-up"
+                              style={{ animationDelay: `${index * 0.03}s` }}
+                            >
+                              <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
+                                <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
+                                  <img
+                                    src={product.thumbnailUrl}
+                                    alt={product.title}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  />
+                                </div>
+                                <span className="text-sm font-medium text-center text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                                  {product.title}
+                                </span>
                               </div>
-                              <span className="text-sm font-medium text-center text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                                {product.title}
-                              </span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-center text-muted-foreground py-4">
-                        Belum ada produk
-                      </p>
-                    )}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center text-muted-foreground py-4">
+                          Belum ada produk
+                        </p>
+                      )}
+                    </ClientOnly>
                   </div>
                 </div>
               </div>
@@ -186,10 +192,12 @@ const Index: React.FC = () => {
                     <h2 className="text-xl md:text-2xl font-bold text-foreground">
                       Layanan
                     </h2>
-                    <p className="text-muted-foreground text-sm md:text-base">
-                      {layananList.length} layanan perbankan untuk kemudahan
-                      transaksi
-                    </p>
+                    <ClientOnly>
+                      <p className="text-muted-foreground text-sm md:text-base">
+                        {layananList.length} layanan perbankan untuk kemudahan
+                        transaksi
+                      </p>
+                    </ClientOnly>
                   </div>
                 </div>
                 <ChevronDown
@@ -211,37 +219,40 @@ const Index: React.FC = () => {
               >
                 <div className="overflow-hidden">
                   <div className="p-6 pt-0 border-t border-border/50">
-                    {layananList.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {layananList.map((product, index) => (
-                          <Link
-                            key={product.id}
-                            href={`/produk/${product.slug}`}
-                            className="group animate-slide-up"
-                            style={{ animationDelay: `${index * 0.03}s` }}
-                          >
-                            <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
-                              <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
-                                <Image
-                                  src={product.thumbnailUrl}
-                                  alt={product.title}
-                                  width={64}
-                                  height={64}
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
+                    <ClientOnly>
+                      {" "}
+                      {layananList.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                          {layananList.map((product, index) => (
+                            <Link
+                              key={product.id}
+                              href={`/produk/${product.slug}`}
+                              className="group animate-slide-up"
+                              style={{ animationDelay: `${index * 0.03}s` }}
+                            >
+                              <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
+                                <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
+                                  <Image
+                                    src={product.thumbnailUrl}
+                                    alt={product.title}
+                                    width={64}
+                                    height={64}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  />
+                                </div>
+                                <span className="text-sm font-medium text-center text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                                  {product.title}
+                                </span>
                               </div>
-                              <span className="text-sm font-medium text-center text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                                {product.title}
-                              </span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-center text-muted-foreground py-4">
-                        Belum ada layanan
-                      </p>
-                    )}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center text-muted-foreground py-4">
+                          Belum ada layanan
+                        </p>
+                      )}
+                    </ClientOnly>
                   </div>
                 </div>
               </div>
