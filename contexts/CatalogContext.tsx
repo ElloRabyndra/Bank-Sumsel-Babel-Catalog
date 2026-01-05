@@ -4,7 +4,6 @@ import React, {
   useContext,
   useReducer,
   useEffect,
-  useRef,
   ReactNode,
 } from "react";
 import { Category, Product } from "@/types";
@@ -36,6 +35,8 @@ type CatalogAction =
   | { type: "DELETE_PRODUCT"; payload: string }
   | { type: "TOGGLE_PUBLISH"; payload: string };
 
+type ProductType = 'produk' | 'layanan';
+
 interface CatalogContextType extends CatalogState {
   addCategory: (
     data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
@@ -55,6 +56,8 @@ interface CatalogContextType extends CatalogState {
   getProductsByCategory: (categoryId: string) => Product[];
   searchProducts: (query: string) => Product[];
   getPublishedProducts: () => Product[];
+  // Deklarasi fungsi yang hilang ditambahkan di sini
+  getProductsByType: (type: ProductType) => Product[];
   getProductCount: (categoryId: string) => number;
   isLoading: boolean;
 }
@@ -66,7 +69,6 @@ const catalogReducer = (
   switch (action.type) {
     case "SET_DATA":
       return action.payload;
-
     case "ADD_CATEGORY": {
       const newCategory: Category = {
         ...action.payload,
@@ -77,7 +79,6 @@ const catalogReducer = (
       };
       return { ...state, categories: [...state.categories, newCategory] };
     }
-
     case "UPDATE_CATEGORY": {
       return {
         ...state,
@@ -95,7 +96,6 @@ const catalogReducer = (
         ),
       };
     }
-
     case "DELETE_CATEGORY":
       return {
         ...state,
@@ -104,7 +104,6 @@ const catalogReducer = (
           (prod) => prod.categoryId !== action.payload
         ),
       };
-
     case "ADD_PRODUCT": {
       const newProduct: Product = {
         ...action.payload,
@@ -115,7 +114,6 @@ const catalogReducer = (
       };
       return { ...state, products: [...state.products, newProduct] };
     }
-
     case "UPDATE_PRODUCT": {
       return {
         ...state,
@@ -133,13 +131,11 @@ const catalogReducer = (
         ),
       };
     }
-
     case "DELETE_PRODUCT":
       return {
         ...state,
         products: state.products.filter((prod) => prod.id !== action.payload),
       };
-
     case "TOGGLE_PUBLISH":
       return {
         ...state,
@@ -153,7 +149,6 @@ const catalogReducer = (
             : prod
         ),
       };
-
     default:
       return state;
   }
@@ -166,7 +161,6 @@ const STORAGE_KEY = "bsb_catalog_data";
 export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // Gunakan custom hook untuk localStorage
   const {
     value: storedData,
     setValue: setStoredData,
@@ -176,87 +170,33 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
     products: createInitialProducts(initialCategories),
   });
 
-  // Ref untuk track apakah sudah initialize
-  const isInitialized = useRef(false);
-
   const [state, dispatch] = useReducer(catalogReducer, storedData);
 
-  // Load initial data HANYA SEKALI saat pertama kali mount
   useEffect(() => {
-    if (!isLoading && !isInitialized.current) {
+    if (!isLoading) {
       dispatch({ type: "SET_DATA", payload: storedData });
-      isInitialized.current = true;
     }
   }, [isLoading, storedData]);
 
-  // Sync state dengan localStorage setiap kali state berubah
-  // TAPI hanya setelah initialization selesai
   useEffect(() => {
-    if (
-      isInitialized.current &&
-      !isLoading &&
-      (state.categories.length > 0 || state.products.length > 0)
-    ) {
+    if (!isLoading) {
       setStoredData(state);
     }
-  }, [state, setStoredData, isLoading]);
+  }, [state, isLoading, setStoredData]);
 
-  // Category methods
-  const addCategory = (
-    data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
-  ) => {
-    dispatch({ type: "ADD_CATEGORY", payload: data });
-  };
-
-  const updateCategory = (id: string, data: Partial<Category>) => {
-    dispatch({ type: "UPDATE_CATEGORY", payload: { id, data } });
-  };
-
-  const deleteCategory = (id: string) => {
-    dispatch({ type: "DELETE_CATEGORY", payload: id });
-  };
-
-  const getCategoryBySlug = (slug: string) => {
-    return state.categories.find((cat) => cat.slug === slug);
-  };
-
-  const getCategoryById = (id: string) => {
-    return state.categories.find((cat) => cat.id === id);
-  };
-
-  // Product methods
-  const addProduct = (
-    data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
-  ) => {
-    dispatch({ type: "ADD_PRODUCT", payload: data });
-  };
-
-  const updateProduct = (id: string, data: Partial<Product>) => {
-    dispatch({ type: "UPDATE_PRODUCT", payload: { id, data } });
-  };
-
-  const deleteProduct = (id: string) => {
-    dispatch({ type: "DELETE_PRODUCT", payload: id });
-  };
-
-  const togglePublish = (id: string) => {
-    dispatch({ type: "TOGGLE_PUBLISH", payload: id });
-  };
-
-  const getProductBySlug = (slug: string) => {
-    return state.products.find((prod) => prod.slug === slug);
-  };
-
-  const getProductById = (id: string) => {
-    return state.products.find((prod) => prod.id === id);
-  };
-
-  const getProductsByCategory = (categoryId: string) => {
-    return state.products.filter(
-      (prod) => prod.categoryId === categoryId && prod.isPublished
-    );
-  };
-
+  // --- Methods ---
+  const addCategory = (data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">) => dispatch({ type: "ADD_CATEGORY", payload: data });
+  const updateCategory = (id: string, data: Partial<Category>) => dispatch({ type: "UPDATE_CATEGORY", payload: { id, data } });
+  const deleteCategory = (id: string) => dispatch({ type: "DELETE_CATEGORY", payload: id });
+  const getCategoryBySlug = (slug: string) => state.categories.find((cat) => cat.slug === slug);
+  const getCategoryById = (id: string) => state.categories.find((cat) => cat.id === id);
+  const addProduct = (data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">) => dispatch({ type: "ADD_PRODUCT", payload: data });
+  const updateProduct = (id: string, data: Partial<Product>) => dispatch({ type: "UPDATE_PRODUCT", payload: { id, data } });
+  const deleteProduct = (id: string) => dispatch({ type: "DELETE_PRODUCT", payload: id });
+  const togglePublish = (id: string) => dispatch({ type: "TOGGLE_PUBLISH", payload: id });
+  const getProductBySlug = (slug: string) => state.products.find((prod) => prod.slug === slug);
+  const getProductById = (id: string) => state.products.find((prod) => prod.id === id);
+  const getProductsByCategory = (categoryId: string) => state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished);
   const searchProducts = (query: string) => {
     const lowerQuery = query.toLowerCase();
     return state.products.filter(
@@ -266,15 +206,14 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
           prod.shortDescription.toLowerCase().includes(lowerQuery))
     );
   };
+  const getPublishedProducts = () => state.products.filter((prod) => prod.isPublished);
+  const getProductCount = (categoryId: string) => state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished).length;
 
-  const getPublishedProducts = () => {
-    return state.products.filter((prod) => prod.isPublished);
-  };
-
-  const getProductCount = (categoryId: string) => {
+  // Implementasi fungsi yang hilang ditambahkan di sini
+  const getProductsByType = (type: ProductType) => {
     return state.products.filter(
-      (prod) => prod.categoryId === categoryId && prod.isPublished
-    ).length;
+      (prod) => prod.type === type && prod.isPublished
+    );
   };
 
   return (
@@ -295,6 +234,7 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
         getProductsByCategory,
         searchProducts,
         getPublishedProducts,
+        getProductsByType, 
         getProductCount,
         isLoading,
       }}
