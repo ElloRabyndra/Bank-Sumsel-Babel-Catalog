@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Save, X } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -26,6 +27,7 @@ import { useCatalog } from "@/contexts/CatalogContext";
 import { useToast } from "@/hooks/use-toast";
 import { useProductForm } from "@/hooks/useProductForm";
 import { extractYouTubeID } from "@/lib/utils";
+import type { ProductType } from "@/types";
 
 interface ProductFormProps {
   productId?: string;
@@ -43,74 +45,71 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
   if (isEditing && !existingProduct) notFound();
 
   // Prepare initial data
-  const initialData = existingProduct
-    ? {
-        categoryId: existingProduct.categoryId,
-        title: existingProduct.title,
-        thumbnailUrl: existingProduct.thumbnailUrl,
-        shortDescription: existingProduct.shortDescription,
-        kenaliProduk: existingProduct.kenaliProduk,
-        namaPenerbit: existingProduct.namaPenerbit,
-        fiturUtama: existingProduct.fiturUtama,
-        manfaat: existingProduct.manfaat,
-        risiko: existingProduct.risiko,
-        persyaratan: existingProduct.persyaratan,
-        biaya: existingProduct.biaya,
-        informasiTambahan: existingProduct.informasiTambahan,
-        featuredImageUrl: existingProduct.featuredImageUrl,
-        youtubeVideoUrl: existingProduct.youtubeVideoUrl,
-        galleryImages: existingProduct.galleryImages,
-        isPublished: existingProduct.isPublished,
-        orderIndex: existingProduct.orderIndex,
-      }
-    : undefined;
+  const initialData = existingProduct || {
+    categoryId: "",
+    type: "produk" as ProductType,
+    title: "",
+    thumbnailUrl: "",
+    shortDescription: "",
+    kenaliProduk: "",
+    namaPenerbit:
+      "PT Bank Pembangunan Daerah Sumatera Selatan dan Bangka Belitung",
+    fiturUtama: "",
+    manfaat: "",
+    risiko: "",
+    persyaratan: "",
+    biaya: "",
+    informasiTambahan: "",
+    featuredImageUrl: "",
+    youtubeVideoUrl: "",
+    galleryImages: [],
+    isPublished: false,
+    orderIndex: products.length + 1,
+  };
+
+  // State for product type
+  const [productType, setProductType] = useState<ProductType>(
+    initialData.type || "produk"
+  );
 
   // Use custom hook for form management
   const { formData, hasChanges, updateField, handleSubmit } = useProductForm({
-    initialData: initialData || {
-      categoryId: "",
-      title: "",
-      thumbnailUrl: "",
-      shortDescription: "",
-      kenaliProduk: "",
-      namaPenerbit:
-        "PT Bank Pembangunan Daerah Sumatera Selatan dan Bangka Belitung",
-      fiturUtama: "",
-      manfaat: "",
-      risiko: "",
-      persyaratan: "",
-      biaya: "",
-      informasiTambahan: "",
-      featuredImageUrl: "",
-      youtubeVideoUrl: "",
-      galleryImages: [],
-      isPublished: false,
-      orderIndex: products.length + 1,
-    },
+    initialData,
     onSubmit: (data) => {
+      // Include type in submission
+      const productData = {
+        ...data,
+        type: productType,
+      };
+
       if (isEditing && productId) {
-        updateProduct(productId, data);
+        updateProduct(productId, productData);
         toast({ title: "Berhasil", description: "Produk berhasil diperbarui" });
       } else {
-        addProduct(data);
+        addProduct(productData);
         toast({
           title: "Berhasil",
           description: "Produk berhasil ditambahkan",
         });
       }
-      router.push("/admin/produk");
+      router.push("/admin/konten");
     },
   });
+
+  // Sync productType with formData
+  useEffect(() => {
+    updateField("type", productType);
+  }, [productType]);
 
   const handleCancel = () => {
     if (hasChanges) {
       if (
         window.confirm("Ada perubahan yang belum disimpan. Yakin ingin keluar?")
       ) {
-        router.push("/admin/produk");
+        router.push("/admin/konten");
       }
     } else {
-      router.push("/admin/produk");
+      router.push("/admin/konten");
     }
   };
 
@@ -129,12 +128,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              {isEditing ? "Edit Produk" : "Tambah Produk"}
+              {isEditing ? "Edit Konten" : "Tambah Konten"}
             </h1>
             <p className="text-muted-foreground">
               {isEditing
-                ? "Perbarui informasi produk"
-                : "Buat produk baru untuk katalog"}
+                ? "Perbarui informasi Konten"
+                : "Buat Konten baru untuk katalog"}
             </p>
           </div>
         </div>
@@ -168,7 +167,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
             Media
           </TabsTrigger>
           <TabsTrigger value="content" className="flex-1 min-w-35">
-            Konten Produk
+            Konten
           </TabsTrigger>
         </TabsList>
 
@@ -214,11 +213,52 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
               </div>
 
               <div className="space-y-2">
-                <Label>Judul Produk *</Label>
+                <Label className="block mb-2">Tipe *</Label>
+                <RadioGroup
+                  value={productType}
+                  onValueChange={(value) =>
+                    setProductType(value as ProductType)
+                  }
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="produk" id="produk" />
+                    <Label
+                      htmlFor="produk"
+                      className="cursor-pointer font-normal"
+                    >
+                      Produk
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="layanan" id="layanan" />
+                    <Label
+                      htmlFor="layanan"
+                      className="cursor-pointer font-normal"
+                    >
+                      Layanan
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <p className="text-xs text-muted-foreground">
+                  {productType === "produk"
+                    ? "Produk perbankan seperti Tabungan, Giro, Kredit"
+                    : "Layanan perbankan seperti Mobile Banking, Internet Banking"}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>
+                  Judul {productType === "produk" ? "Produk" : "Layanan"} *
+                </Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => updateField("title", e.target.value)}
-                  placeholder="Contoh: Tabungan SimPel"
+                  placeholder={
+                    productType === "produk"
+                      ? "Contoh: Tabungan SimPel"
+                      : "Contoh: BSB Mobile Banking"
+                  }
                 />
               </div>
 
@@ -277,61 +317,86 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
           </Card>
         </TabsContent>
 
-        {/* Content Tab */}
+        {/* Content Tab - CONDITIONAL RENDERING */}
         <TabsContent value="content" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Konten Produk</CardTitle>
+              <CardTitle>
+                Konten {productType === "produk" ? "Produk" : "Layanan"}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Kenali Produk / Deskripsi Layanan - Always show */}
               <RichTextEditor
                 value={formData.kenaliProduk}
                 onChange={(v) => updateField("kenaliProduk", v)}
-                label="Kenali Produk"
+                label={
+                  productType === "layanan"
+                    ? "Deskripsi Layanan"
+                    : "Kenali Produk"
+                }
                 required
               />
-              <div className="space-y-2">
-                <Label>Nama Penerbit *</Label>
-                <Input
-                  value={formData.namaPenerbit}
-                  onChange={(e) => updateField("namaPenerbit", e.target.value)}
-                />
-              </div>
+
+              {/* Nama Penerbit - Only for Produk */}
+              {productType === "produk" && (
+                <div className="space-y-2">
+                  <Label>Nama Penerbit *</Label>
+                  <Input
+                    value={formData.namaPenerbit}
+                    onChange={(e) =>
+                      updateField("namaPenerbit", e.target.value)
+                    }
+                  />
+                </div>
+              )}
+
+              {/* Fitur Utama - Always show */}
               <RichTextEditor
                 value={formData.fiturUtama}
                 onChange={(v) => updateField("fiturUtama", v)}
                 label="Fitur Utama"
-                required
+                required={productType === "produk"}
               />
-              <RichTextEditor
-                value={formData.manfaat}
-                onChange={(v) => updateField("manfaat", v)}
-                label="Manfaat"
-                required
-              />
-              <RichTextEditor
-                value={formData.risiko}
-                onChange={(v) => updateField("risiko", v)}
-                label="Risiko"
-                required
-              />
+
+              {/* Manfaat - Only for Produk */}
+              {productType === "produk" && (
+                <RichTextEditor
+                  value={formData.manfaat}
+                  onChange={(v) => updateField("manfaat", v)}
+                  label="Manfaat"
+                  required
+                />
+              )}
+
+              {/* Persyaratan / Langkah-langkah - Always show */}
               <RichTextEditor
                 value={formData.persyaratan}
                 onChange={(v) => updateField("persyaratan", v)}
-                label="Persyaratan"
+                label={
+                  productType === "layanan" ? "Langkah-langkah" : "Persyaratan"
+                }
                 required
               />
-              <RichTextEditor
-                value={formData.biaya}
-                onChange={(v) => updateField("biaya", v)}
-                label="Biaya"
-                required
-              />
-              <RichTextEditor
-                value={formData.informasiTambahan}
-                onChange={(v) => updateField("informasiTambahan", v)}
-                label="Informasi Tambahan (Opsional)"
-              />
+
+              {/* Biaya - Only for Produk */}
+              {productType === "produk" && (
+                <RichTextEditor
+                  value={formData.biaya}
+                  onChange={(v) => updateField("biaya", v)}
+                  label="Biaya"
+                  required
+                />
+              )}
+
+              {/* Info Tambahan - Only for Produk */}
+              {productType === "produk" && (
+                <RichTextEditor
+                  value={formData.informasiTambahan}
+                  onChange={(v) => updateField("informasiTambahan", v)}
+                  label="Informasi Tambahan (Opsional)"
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

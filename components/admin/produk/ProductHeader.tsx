@@ -1,4 +1,3 @@
-// components/admin/produk/ProductHeader.tsx
 import React from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -8,17 +7,13 @@ export const ProductHeader: React.FC = () => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Kelola Produk
-        </h1>
-        <p className="text-muted-foreground">
-          Tambah, edit, atau hapus produk
-        </p>
+        <h1 className="text-2xl font-bold text-foreground">Kelola Konten</h1>
+        <p className="text-muted-foreground">Tambah, edit, atau hapus Konten</p>
       </div>
-      <Link href="/admin/produk/tambah">
+      <Link href="/admin/konten/tambah">
         <Button className="gap-2">
           <Plus className="w-4 h-4" />
-          Tambah Produk
+          Tambah Konten
         </Button>
       </Link>
     </div>

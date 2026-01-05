@@ -1,4 +1,3 @@
-// components/admin/produk/useProductFilters.ts
 import { useState, useMemo } from "react";
 import { Product } from "@/types";
 

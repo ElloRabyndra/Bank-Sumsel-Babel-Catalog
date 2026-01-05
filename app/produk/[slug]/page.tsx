@@ -12,6 +12,7 @@ import {
   getProductBySlug,
   getCategoryById,
   getProductsByCategory,
+  getProductsByType
 } from "@/lib/catalog";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,20 +40,19 @@ export default async function ProductDetailPage({ params }: Props) {
   }
 
   const category = getCategoryById(product.categoryId);
-  const relatedProducts = category
-    ? getProductsByCategory(category.id)
-        .filter((p) => p.id !== product.id)
-        .slice(0, 4)
-    : [];
+  // Get related products of same type
+  const relatedProducts = getProductsByType(product.type)
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
 
   const heroImage = product.featuredImageUrl || product.thumbnailUrl;
+
+  const isLayanan = product.type === "layanan";
 
   // Build breadcrumb items
   const breadcrumbItems = [
     { label: "Beranda", href: "/" },
-    ...(category
-      ? [{ label: category.name, href: `/kategori/${category.slug}` }]
-      : []),
+    { label: isLayanan ? "Layanan" : "Produk", href: "/" },
     { label: product.title },
   ];
 
@@ -70,7 +70,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
           <ProductTabs product={product} />
 
-          <RelatedProducts products={relatedProducts} />
+          <RelatedProducts products={relatedProducts} productType={product.type} />
         </div>
       </main>
 

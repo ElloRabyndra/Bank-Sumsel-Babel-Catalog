@@ -9,7 +9,7 @@ export function DashboardHeader() {
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">
-          Kelola katalog produk Bank Sumsel Babel
+          Kelola katalog produk dan layanan Bank Sumsel Babel
         </p>
       </div>
 
@@ -21,10 +21,10 @@ export function DashboardHeader() {
           </Button>
         </Link>
 
-        <Link href="/admin/produk/tambah">
+        <Link href="/admin/konten/tambah">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
-            Produk
+            Konten
           </Button>
         </Link>
       </div>

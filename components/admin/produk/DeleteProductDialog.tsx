@@ -1,4 +1,3 @@
-// components/admin/produk/DeleteProductDialog.tsx
 import React from "react";
 import {
   AlertDialog,
@@ -26,9 +25,9 @@ export const DeleteProductDialog: React.FC<DeleteProductDialogProps> = ({
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus Produk?</AlertDialogTitle>
+          <AlertDialogTitle>Hapus Konten?</AlertDialogTitle>
           <AlertDialogDescription>
-            Tindakan ini tidak dapat dibatalkan. Produk akan dihapus secara
+            Tindakan ini tidak dapat dibatalkan. Konten akan dihapus secara
             permanen.
           </AlertDialogDescription>
         </AlertDialogHeader>

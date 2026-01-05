@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const adminNavItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/kategori", label: "Kategori", icon: FolderTree },
-  { href: "/admin/produk", label: "Produk", icon: Package },
+  { href: "/admin/konten", label: "Konten", icon: Package },
 ];
 
 export default function AdminLayout({

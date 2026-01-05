@@ -37,7 +37,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({
                 <TableHead className="hidden md:table-cell">
                   Deskripsi
                 </TableHead>
-                <TableHead>Produk</TableHead>
+                <TableHead>Konten</TableHead>
                 <TableHead className="text-center">Aksi</TableHead>
               </TableRow>
             </TableHeader>

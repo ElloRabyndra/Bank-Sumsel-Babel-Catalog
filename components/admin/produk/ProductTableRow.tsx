@@ -1,4 +1,3 @@
-// components/admin/produk/ProductTableRow.tsx
 import React from "react";
 import Image from "next/image";
 import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";

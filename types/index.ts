@@ -10,9 +10,12 @@ export interface Category {
   updatedAt: string;
 }
 
+export type ProductType = "produk" | "layanan";
+
 export interface Product {
   id: string;
   categoryId: string;
+  type: ProductType;
   title: string;
   slug: string;
   thumbnailUrl: string;
@@ -34,19 +37,19 @@ export interface Product {
   updatedAt: string;
 }
 
-export type LucideIconName = 
-  | 'Wallet'
-  | 'Settings'
-  | 'FileText'
-  | 'CreditCard'
-  | 'Building'
-  | 'Banknote'
-  | 'PiggyBank'
-  | 'TrendingUp'
-  | 'Shield'
-  | 'Users'
-  | 'Home'
-  | 'Car'
-  | 'GraduationCap'
-  | 'Heart'
-  | 'Briefcase';
+export type LucideIconName =
+  | "Wallet"
+  | "Settings"
+  | "FileText"
+  | "CreditCard"
+  | "Building"
+  | "Banknote"
+  | "PiggyBank"
+  | "TrendingUp"
+  | "Shield"
+  | "Users"
+  | "Home"
+  | "Car"
+  | "GraduationCap"
+  | "Heart"
+  | "Briefcase";

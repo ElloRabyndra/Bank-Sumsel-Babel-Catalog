@@ -9,7 +9,7 @@ export function DashboardSkeleton() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
-            Kelola katalog produk Bank Sumsel Babel
+            Kelola katalog produk dan layanan Bank Sumsel Babel
           </p>
         </div>
       </div>

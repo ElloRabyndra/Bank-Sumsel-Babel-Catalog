@@ -1,5 +1,5 @@
-import { Category, Product } from '@/types';
-import { initialCategories, createInitialProducts } from '@/data/mockData';
+import { Category, Product } from "@/types";
+import { initialCategories, createInitialProducts } from "@/data/mockData";
 
 // Data di-cache di memory (untuk development)
 const categories: Category[] = initialCategories;
@@ -15,6 +15,10 @@ export function getCategoryBySlug(slug: string): Category | undefined {
 
 export function getCategoryById(id: string): Category | undefined {
   return categories.find((cat) => cat.id === id);
+}
+
+export function getProductsByType(type: "produk" | "layanan"): Product[] {
+  return products.filter((p) => p.type === type && p.isPublished);
 }
 
 export function getAllCategories(): Category[] {
@@ -42,10 +46,12 @@ export function searchProducts(query: string): Product[] {
   return products.filter(
     (p) =>
       p.isPublished &&
-      (p.title.toLowerCase().includes(q) || p.shortDescription.toLowerCase().includes(q))
+      (p.title.toLowerCase().includes(q) ||
+        p.shortDescription.toLowerCase().includes(q))
   );
 }
 
 export function getProductCount(categoryId: string): number {
-  return products.filter((p) => p.categoryId === categoryId && p.isPublished).length;
+  return products.filter((p) => p.categoryId === categoryId && p.isPublished)
+    .length;
 }
