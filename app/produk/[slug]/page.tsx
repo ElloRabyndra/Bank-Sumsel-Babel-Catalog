@@ -1,6 +1,6 @@
-"use client"; 
+"use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
@@ -9,32 +9,26 @@ import { ProductHeader } from "@/components/produk/ProductHeader";
 import { ProductVideoSection } from "@/components/produk/ProductVideoSection";
 import { ProductTabs } from "@/components/produk/ProductTabs";
 import { RelatedProducts } from "@/components/produk/RelatedProducts";
-import { useCatalog } from "@/contexts/CatalogContext"; 
-import { Product } from "@/types";
-
+import { useCatalog } from "@/contexts/CatalogContext";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : "";
 
   const { getProductBySlug, getProductsByType, isLoading } = useCatalog();
-  
-  // State lokal untuk menyimpan data produk yang ditemukan
-  const [product, setProduct] = useState<Product | null | undefined>(undefined);
 
-  useLayoutEffect(() => {
-    if (!isLoading && slug) {
-      const foundProduct = getProductBySlug(slug);
-      setProduct(foundProduct); 
-      
-      // Update document title langsung di sini
-      if (foundProduct) {
-        document.title = `${foundProduct.title} - Bank Sumsel Babel`;
-      } else {
+  const product = !isLoading && slug ? getProductBySlug(slug) : undefined;
+
+  // Update document title sebagai side effect
+  useEffect(() => {
+    if (product !== undefined) {
+      if (product) {
+        document.title = `${product.title} - Bank Sumsel Babel`;
+      } else if (!isLoading) {
         document.title = "Produk tidak ditemukan - Bank Sumsel Babel";
       }
     }
-  }, [slug, getProductBySlug, isLoading]);
+  }, [product, isLoading]);
 
   if (isLoading || product === undefined) {
     return (
@@ -75,7 +69,10 @@ export default function ProductDetailPage() {
           <ProductHeader product={product} heroImage={heroImage} />
           <ProductVideoSection videoUrl={product.youtubeVideoUrl} />
           <ProductTabs product={product} />
-          <RelatedProducts products={relatedProducts} productType={product.type} />
+          <RelatedProducts
+            products={relatedProducts}
+            productType={product.type}
+          />
         </div>
       </main>
 
