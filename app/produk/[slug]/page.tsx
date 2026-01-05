@@ -23,17 +23,21 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null | undefined>(undefined);
 
   useEffect(() => {
+    // Hanya jalankan effect jika slug tersedia dan data sudah selesai loading
     if (!isLoading && slug) {
       const foundProduct = getProductBySlug(slug);
       setProduct(foundProduct); 
     }
   }, [slug, getProductBySlug, isLoading]);
 
+  // Update document title sebagai side effect terpisah
   useEffect(() => {
-    if (product) {
-      document.title = `${product.title} - Bank Sumsel Babel`;
-    } else if (!isLoading) {
-      document.title = "Produk tidak ditemukan - Bank Sumsel Babel";
+    if (product !== undefined) {
+      if (product) {
+        document.title = `${product.title} - Bank Sumsel Babel`;
+      } else if (!isLoading) {
+        document.title = "Produk tidak ditemukan - Bank Sumsel Babel";
+      }
     }
   }, [product, isLoading]);
 
