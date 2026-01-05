@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search, Package, HandHelping, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,9 @@ import { cn } from "@/lib/utils";
 const Index: React.FC = () => {
   const { products } = useCatalog();
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedSection, setExpandedSection] = useState<"produk" | "layanan" | null>(null);
+  const [expandedSection, setExpandedSection] = useState<
+    "produk" | "layanan" | null
+  >(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,11 +49,16 @@ const Index: React.FC = () => {
                 Katalog Digital Produk & Layanan
               </h1>
               <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 animate-slide-up">
-                Akses informasi lengkap produk dan layanan perbankan Bank Sumsel Babel dalam satu platform yang mudah dan praktis
+                Akses informasi lengkap produk dan layanan perbankan Bank Sumsel
+                Babel dalam satu platform yang mudah dan praktis
               </p>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="max-w-xl mx-auto animate-slide-up" style={{ animationDelay: "0.1s" }}>
+              <form
+                onSubmit={handleSearch}
+                className="max-w-xl mx-auto animate-slide-up"
+                style={{ animationDelay: "0.1s" }}
+              >
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -60,7 +68,10 @@ const Index: React.FC = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-12 pr-32 h-14 text-base rounded-full bg-background border-0 shadow-lg"
                   />
-                  <Button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
+                  <Button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10"
+                  >
                     Cari
                   </Button>
                 </div>
@@ -70,8 +81,16 @@ const Index: React.FC = () => {
 
           {/* Decorative wave */}
           <div className="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-              <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="hsl(var(--background ))" />
+            <svg
+              viewBox="0 0 1440 120"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full"
+            >
+              <path
+                d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+                fill="hsl(var(--background ))"
+              />
             </svg>
           </div>
         </section>
@@ -91,7 +110,9 @@ const Index: React.FC = () => {
                     <Package className="w-7 h-7" />
                   </div>
                   <div className="text-left">
-                    <h2 className="text-xl md:text-2xl font-bold text-foreground">Produk</h2>
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                      Produk
+                    </h2>
                     <p className="text-muted-foreground text-sm md:text-base">
                       {produkList.length} produk perbankan untuk kebutuhan Anda
                     </p>
@@ -109,7 +130,9 @@ const Index: React.FC = () => {
               <div
                 className={cn(
                   "grid transition-all duration-300 ease-in-out",
-                  expandedSection === "produk" ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  expandedSection === "produk"
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
                 )}
               >
                 <div className="overflow-hidden">
@@ -139,7 +162,9 @@ const Index: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-center text-muted-foreground py-4">Belum ada produk</p>
+                      <p className="text-center text-muted-foreground py-4">
+                        Belum ada produk
+                      </p>
                     )}
                   </div>
                 </div>
@@ -158,9 +183,12 @@ const Index: React.FC = () => {
                     <HandHelping className="w-7 h-7" />
                   </div>
                   <div className="text-left">
-                    <h2 className="text-xl md:text-2xl font-bold text-foreground">Layanan</h2>
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                      Layanan
+                    </h2>
                     <p className="text-muted-foreground text-sm md:text-base">
-                      {layananList.length} layanan perbankan untuk kemudahan transaksi
+                      {layananList.length} layanan perbankan untuk kemudahan
+                      transaksi
                     </p>
                   </div>
                 </div>
@@ -176,7 +204,9 @@ const Index: React.FC = () => {
               <div
                 className={cn(
                   "grid transition-all duration-300 ease-in-out",
-                  expandedSection === "layanan" ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  expandedSection === "layanan"
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
                 )}
               >
                 <div className="overflow-hidden">
@@ -192,9 +222,11 @@ const Index: React.FC = () => {
                           >
                             <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
                               <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
-                                <img
+                                <Image
                                   src={product.thumbnailUrl}
                                   alt={product.title}
+                                  width={64}
+                                  height={64}
                                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                               </div>
@@ -206,7 +238,9 @@ const Index: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-center text-muted-foreground py-4">Belum ada layanan</p>
+                      <p className="text-center text-muted-foreground py-4">
+                        Belum ada layanan
+                      </p>
                     )}
                   </div>
                 </div>
