@@ -48,7 +48,7 @@ export const ProductList: React.FC<ProductListProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Produk</TableHead>
+                  <TableHead>Konten</TableHead>
                   <TableHead className="hidden md:table-cell">
                     Kategori
                   </TableHead>

@@ -13,11 +13,9 @@ export const CategoryHeader: React.FC<CategoryHeaderProps> = ({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Kelola Kategori
-        </h1>
+        <h1 className="text-2xl font-bold text-foreground">Kelola Kategori</h1>
         <p className="text-muted-foreground">
-          Tambah, edit, atau hapus kategori produk
+          Tambah, edit, atau hapus kategori konten
         </p>
       </div>
       <Button onClick={onAddClick} className="gap-2">

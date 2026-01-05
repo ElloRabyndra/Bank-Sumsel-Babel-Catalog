@@ -27,8 +27,8 @@ export function RecentProductsTable({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg">Produk Terbaru</CardTitle>
-        <Link href="/admin/produk">
+        <CardTitle className="text-lg">Konten Terbaru</CardTitle>
+        <Link href="/admin/konten">
           <Button variant="ghost" size="sm">
             Lihat Semua
           </Button>
@@ -40,7 +40,7 @@ export function RecentProductsTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Produk</TableHead>
+                <TableHead>Konten</TableHead>
                 <TableHead className="hidden sm:table-cell">Kategori</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Diperbarui
@@ -97,7 +97,7 @@ export function RecentProductsTable({
           </Table>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            Belum ada produk
+            Belum ada Konten
           </div>
         )}
       </CardContent>

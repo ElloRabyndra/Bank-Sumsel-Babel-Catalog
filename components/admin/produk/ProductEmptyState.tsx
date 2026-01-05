@@ -1,4 +1,3 @@
-// components/admin/produk/ProductEmptyState.tsx
 import React from "react";
 import { Package } from "lucide-react";
 
@@ -14,8 +13,8 @@ export const ProductEmptyState: React.FC<ProductEmptyStateProps> = ({
       <Package className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
       <p className="text-muted-foreground">
         {hasFilters
-          ? "Tidak ada produk yang cocok dengan filter"
-          : "Belum ada produk"}
+          ? "Tidak ada konten yang cocok dengan filter"
+          : "Belum ada konten"}
       </p>
     </div>
   );

@@ -6,15 +6,19 @@ import { truncate } from "@/lib/utils";
 import Image from "next/image";
 interface RelatedProductsProps {
   products: Product[];
+  productType?: "produk" | "layanan";
 }
 
-export function RelatedProducts({ products }: RelatedProductsProps) {
+export function RelatedProducts({
+  products,
+  productType = "produk",
+}: RelatedProductsProps) {
   if (products.length === 0) return null;
 
   return (
     <section className="mt-16">
-      <h2 className="text-2xl font-semibold text-foreground mb-6">
-        Produk Lainnya
+      <h2 className="text-2xl font-bold text-foreground mb-6">
+        {productType === "layanan" ? "Layanan Lainnya" : "Produk Lainnya"}{" "}
       </h2>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (

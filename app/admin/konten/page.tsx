@@ -1,4 +1,3 @@
-// app/admin/produk/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -50,7 +49,7 @@ const AdminProducts = () => {
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/admin/produk/edit/${id}`);
+    router.push(`/admin/konten/edit/${id}`);
   };
 
   const handleDelete = () => {

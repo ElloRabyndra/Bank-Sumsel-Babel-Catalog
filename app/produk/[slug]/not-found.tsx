@@ -9,10 +9,10 @@ export default function NotFound() {
       <main className="flex-1 flex items-center justify-center py-12">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-2">
-            Produk tidak ditemukan
+            Konten tidak ditemukan
           </h1>
           <p className="text-muted-foreground mb-4">
-            Produk yang Anda cari tidak tersedia
+            Konten yang Anda cari tidak tersedia
           </p>
           <Link href="/" className="text-primary hover:underline">
             Kembali ke Beranda

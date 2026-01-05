@@ -376,7 +376,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
           <p className="text-xs text-muted-foreground">
             Keterangan akan tampil saat gambar di-zoom pada halaman detail
-            produk.
+            konten.
           </p>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
