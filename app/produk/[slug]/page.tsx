@@ -27,6 +27,7 @@ export default function ProductDetailPage() {
       const foundProduct = getProductBySlug(slug);
       setProduct(foundProduct); 
       
+      // Update document title langsung di sini
       if (foundProduct) {
         document.title = `${foundProduct.title} - Bank Sumsel Babel`;
       } else {
