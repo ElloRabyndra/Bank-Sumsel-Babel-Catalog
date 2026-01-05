@@ -14,6 +14,7 @@ export function useProductForm({ initialData, onSubmit }: UseProductFormProps) {
 
   const defaultData: ProductFormData = {
     categoryId: "",
+    type: "produk",
     title: "",
     thumbnailUrl: "",
     shortDescription: "",

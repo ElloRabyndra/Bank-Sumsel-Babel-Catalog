@@ -11,7 +11,6 @@ import { RelatedProducts } from "@/components/produk/RelatedProducts";
 import {
   getProductBySlug,
   getCategoryById,
-  getProductsByCategory,
   getProductsByType
 } from "@/lib/catalog";
 
