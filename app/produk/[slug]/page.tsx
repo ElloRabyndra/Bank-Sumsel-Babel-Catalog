@@ -1,6 +1,6 @@
 "use client"; 
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
@@ -22,24 +22,18 @@ export default function ProductDetailPage() {
   // State lokal untuk menyimpan data produk yang ditemukan
   const [product, setProduct] = useState<Product | null | undefined>(undefined);
 
-  useEffect(() => {
-    // Hanya jalankan effect jika slug tersedia dan data sudah selesai loading
+  useLayoutEffect(() => {
     if (!isLoading && slug) {
       const foundProduct = getProductBySlug(slug);
       setProduct(foundProduct); 
-    }
-  }, [slug, getProductBySlug, isLoading]);
-
-  // Update document title sebagai side effect terpisah
-  useEffect(() => {
-    if (product !== undefined) {
-      if (product) {
-        document.title = `${product.title} - Bank Sumsel Babel`;
-      } else if (!isLoading) {
+      
+      if (foundProduct) {
+        document.title = `${foundProduct.title} - Bank Sumsel Babel`;
+      } else {
         document.title = "Produk tidak ditemukan - Bank Sumsel Babel";
       }
     }
-  }, [product, isLoading]);
+  }, [slug, getProductBySlug, isLoading]);
 
   if (isLoading || product === undefined) {
     return (
