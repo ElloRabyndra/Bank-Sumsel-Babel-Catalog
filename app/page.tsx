@@ -153,9 +153,11 @@ const Index: React.FC = () => {
                             >
                               <div className="flex flex-col items-center p-4 rounded-xl border border-border/50 bg-background hover:border-primary/30 hover:shadow-md transition-all duration-200">
                                 <div className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-muted">
-                                  <img
+                                  <Image
                                     src={product.thumbnailUrl}
                                     alt={product.title}
+                                    width={64}
+                                    height={64}
                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                   />
                                 </div>
