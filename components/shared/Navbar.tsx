@@ -13,14 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-  { href: "/", label: "Beranda" },
-  { href: "/kategori/tabungan", label: "Tabungan" },
-  { href: "/kategori/fasilitas-layanan", label: "Layanan" },
-  { href: "/kategori/giro", label: "Giro" },
-  { href: "/kategori/kredit", label: "Kredit" },
-];
+import { navLinks } from "@/data/navigation";
 
 export function Navbar() {
   const pathname = usePathname();

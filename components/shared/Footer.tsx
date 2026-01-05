@@ -8,6 +8,18 @@ import {
   Instagram,
   Twitter,
 } from "lucide-react";
+import {
+  socialLinks,
+  contactInfo,
+  footerLinks,
+  companyInfo,
+} from "@/data/navigation";
+
+const iconMap = {
+  Facebook,
+  Instagram,
+  Twitter,
+};
 
 export const Footer: React.FC = () => {
   return (
@@ -19,15 +31,14 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-2 mb-4 w-48">
               <Image
                 src="/logo-white.png"
-                alt="Logo Bank Sumsel Babel"
+                alt={`Logo ${companyInfo.shortName}`}
                 width={192}
                 height={48}
                 priority
               />
             </div>
             <p className="text-sm text-background/70 leading-relaxed">
-              Bank Pembangunan Daerah Sumatera Selatan dan Bangka Belitung,
-              melayani dengan sepenuh hati untuk kemajuan bersama.
+              {companyInfo.description}
             </p>
           </div>
 
@@ -35,38 +46,16 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-4">Produk & Layanan</h3>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/kategori/tabungan"
-                  className="text-sm text-background/70 hover:text-background transition-colors"
-                >
-                  Tabungan
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/kategori/giro"
-                  className="text-sm text-background/70 hover:text-background transition-colors"
-                >
-                  Giro
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/kategori/kredit"
-                  className="text-sm text-background/70 hover:text-background transition-colors"
-                >
-                  Kredit
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/kategori/fasilitas-layanan"
-                  className="text-sm text-background/70 hover:text-background transition-colors"
-                >
-                  Fasilitas Layanan
-                </Link>
-              </li>
+              {footerLinks.products.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-background/70 hover:text-background transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -77,19 +66,19 @@ export const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 mt-0.5 text-primary" />
                 <span className="text-sm text-background/70">
-                  (0711) 350000
+                  {contactInfo.phone}
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 mt-0.5 text-primary" />
                 <span className="text-sm text-background/70">
-                  info@banksumselbabel.com
+                  {contactInfo.email}
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 text-primary" />
                 <span className="text-sm text-background/70">
-                  Jl. Gubernur H. A. Bastari No. 7, Palembang
+                  {contactInfo.address}
                 </span>
               </li>
             </ul>
@@ -99,32 +88,27 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-4">Ikuti Kami</h3>
             <div className="flex gap-3">
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
+              {socialLinks.map((social) => {
+                const Icon = iconMap[social.icon];
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+                    aria-label={social.name}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
 
         <div className="border-t border-background/10 mt-8 pt-8 text-center text-sm text-background/50">
           <p>
-            © {new Date().getFullYear()} PT Bank Pembangunan Daerah Sumatera
-            Selatan dan Bangka Belitung. All rights reserved.
+            © {new Date().getFullYear()} {companyInfo.name}. All rights
+            reserved.
           </p>
         </div>
       </div>
