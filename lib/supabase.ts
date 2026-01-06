@@ -1,10 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  throw new Error("Supabase env variables are missing");
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -25,14 +25,17 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['categories']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['categories']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["categories"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["categories"]["Insert"]>;
       };
       products: {
         Row: {
           id: string;
           category_id: string;
-          type: 'produk' | 'layanan';
+          type: "produk" | "layanan";
           title: string;
           slug: string;
           thumbnail_url: string;
@@ -53,8 +56,11 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['products']['Row'], 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['products']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["products"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["products"]["Insert"]>;
       };
     };
   };

@@ -2,224 +2,187 @@
 import React, {
   createContext,
   useContext,
-  useReducer,
+  useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
-import { Category, Product } from "@/types";
-import { initialCategories, createInitialProducts } from "@/data/mockData";
-import { generateId, generateSlug } from "@/lib/utils";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Category, Product, ProductType } from "@/types";
+import * as categoriesApi from "@/lib/api/categories";
+import * as productsApi from "@/lib/api/products";
 
-interface CatalogState {
+interface CatalogContextType {
   categories: Category[];
   products: Product[];
-}
-
-type CatalogAction =
-  | { type: "SET_DATA"; payload: CatalogState }
-  | {
-      type: "ADD_CATEGORY";
-      payload: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">;
-    }
-  | {
-      type: "UPDATE_CATEGORY";
-      payload: { id: string; data: Partial<Category> };
-    }
-  | { type: "DELETE_CATEGORY"; payload: string }
-  | {
-      type: "ADD_PRODUCT";
-      payload: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">;
-    }
-  | { type: "UPDATE_PRODUCT"; payload: { id: string; data: Partial<Product> } }
-  | { type: "DELETE_PRODUCT"; payload: string }
-  | { type: "TOGGLE_PUBLISH"; payload: string };
-
-type ProductType = 'produk' | 'layanan';
-
-interface CatalogContextType extends CatalogState {
-  addCategory: (
-    data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
-  ) => void;
-  updateCategory: (id: string, data: Partial<Category>) => void;
-  deleteCategory: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  
+  // Category methods
+  addCategory: (data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">) => Promise<void>;
+  updateCategory: (id: string, data: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   getCategoryBySlug: (slug: string) => Category | undefined;
   getCategoryById: (id: string) => Category | undefined;
-  addProduct: (
-    data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
-  ) => void;
-  updateProduct: (id: string, data: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
-  togglePublish: (id: string) => void;
+  
+  // Product methods
+  addProduct: (data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">) => Promise<void>;
+  updateProduct: (id: string, data: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  togglePublish: (id: string) => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
   getProductById: (id: string) => Product | undefined;
   getProductsByCategory: (categoryId: string) => Product[];
+  getProductsByType: (type: ProductType) => Product[];
   searchProducts: (query: string) => Product[];
   getPublishedProducts: () => Product[];
-  // Deklarasi fungsi yang hilang ditambahkan di sini
-  getProductsByType: (type: ProductType) => Product[];
   getProductCount: (categoryId: string) => number;
-  isLoading: boolean;
+  
+  // Refresh methods
+  refreshCategories: () => Promise<void>;
+  refreshProducts: () => Promise<void>;
 }
 
-const catalogReducer = (
-  state: CatalogState,
-  action: CatalogAction
-): CatalogState => {
-  switch (action.type) {
-    case "SET_DATA":
-      return action.payload;
-    case "ADD_CATEGORY": {
-      const newCategory: Category = {
-        ...action.payload,
-        id: generateId(),
-        slug: generateSlug(action.payload.name),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      return { ...state, categories: [...state.categories, newCategory] };
-    }
-    case "UPDATE_CATEGORY": {
-      return {
-        ...state,
-        categories: state.categories.map((cat) =>
-          cat.id === action.payload.id
-            ? {
-                ...cat,
-                ...action.payload.data,
-                slug: action.payload.data.name
-                  ? generateSlug(action.payload.data.name)
-                  : cat.slug,
-                updatedAt: new Date().toISOString(),
-              }
-            : cat
-        ),
-      };
-    }
-    case "DELETE_CATEGORY":
-      return {
-        ...state,
-        categories: state.categories.filter((cat) => cat.id !== action.payload),
-        products: state.products.filter(
-          (prod) => prod.categoryId !== action.payload
-        ),
-      };
-    case "ADD_PRODUCT": {
-      const newProduct: Product = {
-        ...action.payload,
-        id: generateId(),
-        slug: generateSlug(action.payload.title),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      return { ...state, products: [...state.products, newProduct] };
-    }
-    case "UPDATE_PRODUCT": {
-      return {
-        ...state,
-        products: state.products.map((prod) =>
-          prod.id === action.payload.id
-            ? {
-                ...prod,
-                ...action.payload.data,
-                slug: action.payload.data.title
-                  ? generateSlug(action.payload.data.title)
-                  : prod.slug,
-                updatedAt: new Date().toISOString(),
-              }
-            : prod
-        ),
-      };
-    }
-    case "DELETE_PRODUCT":
-      return {
-        ...state,
-        products: state.products.filter((prod) => prod.id !== action.payload),
-      };
-    case "TOGGLE_PUBLISH":
-      return {
-        ...state,
-        products: state.products.map((prod) =>
-          prod.id === action.payload
-            ? {
-                ...prod,
-                isPublished: !prod.isPublished,
-                updatedAt: new Date().toISOString(),
-              }
-            : prod
-        ),
-      };
-    default:
-      return state;
-  }
-};
-
 const CatalogContext = createContext<CatalogContextType | undefined>(undefined);
-
-const STORAGE_KEY = "bsb_catalog_data";
 
 export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const {
-    value: storedData,
-    setValue: setStoredData,
-    isLoading,
-  } = useLocalStorage<CatalogState>(STORAGE_KEY, {
-    categories: initialCategories,
-    products: createInitialProducts(initialCategories),
-  });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [state, dispatch] = useReducer(catalogReducer, storedData);
+  // Fetch initial data
+  const refreshCategories = useCallback(async () => {
+    try {
+      const data = await categoriesApi.fetchCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Failed to load categories");
+    }
+  }, []);
+
+  const refreshProducts = useCallback(async () => {
+    try {
+      const data = await productsApi.fetchProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError("Failed to load products");
+    }
+  }, []);
 
   useEffect(() => {
-    if (!isLoading) {
-      dispatch({ type: "SET_DATA", payload: storedData });
-    }
-  }, [isLoading, storedData]);
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await Promise.all([refreshCategories(), refreshProducts()]);
+      } catch (err) {
+        console.error("Error loading data:", err);
+        setError("Failed to load data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    if (!isLoading) {
-      setStoredData(state);
-    }
-  }, [state, isLoading, setStoredData]);
+    loadData();
+  }, [refreshCategories, refreshProducts]);
 
-  // --- Methods ---
-  const addCategory = (data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">) => dispatch({ type: "ADD_CATEGORY", payload: data });
-  const updateCategory = (id: string, data: Partial<Category>) => dispatch({ type: "UPDATE_CATEGORY", payload: { id, data } });
-  const deleteCategory = (id: string) => dispatch({ type: "DELETE_CATEGORY", payload: id });
-  const getCategoryBySlug = (slug: string) => state.categories.find((cat) => cat.slug === slug);
-  const getCategoryById = (id: string) => state.categories.find((cat) => cat.id === id);
-  const addProduct = (data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">) => dispatch({ type: "ADD_PRODUCT", payload: data });
-  const updateProduct = (id: string, data: Partial<Product>) => dispatch({ type: "UPDATE_PRODUCT", payload: { id, data } });
-  const deleteProduct = (id: string) => dispatch({ type: "DELETE_PRODUCT", payload: id });
-  const togglePublish = (id: string) => dispatch({ type: "TOGGLE_PUBLISH", payload: id });
-  const getProductBySlug = (slug: string) => state.products.find((prod) => prod.slug === slug);
-  const getProductById = (id: string) => state.products.find((prod) => prod.id === id);
-  const getProductsByCategory = (categoryId: string) => state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished);
+  // Category methods
+  const addCategory = async (
+    data: Omit<Category, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => {
+    const newCategory = await categoriesApi.createCategory(data);
+    setCategories((prev) => [...prev, newCategory]);
+  };
+
+  const updateCategory = async (id: string, data: Partial<Category>) => {
+    const updated = await categoriesApi.updateCategory(id, data);
+    setCategories((prev) =>
+      prev.map((cat) => (cat.id === id ? updated : cat))
+    );
+  };
+
+  const deleteCategory = async (id: string) => {
+    await categoriesApi.deleteCategory(id);
+    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+    setProducts((prev) => prev.filter((prod) => prod.categoryId !== id));
+  };
+
+  const getCategoryBySlug = (slug: string) =>
+    categories.find((cat) => cat.slug === slug);
+
+  const getCategoryById = (id: string) =>
+    categories.find((cat) => cat.id === id);
+
+  // Product methods
+  const addProduct = async (
+    data: Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">
+  ) => {
+    const newProduct = await productsApi.createProduct(data);
+    setProducts((prev) => [...prev, newProduct]);
+  };
+
+  const updateProduct = async (id: string, data: Partial<Product>) => {
+    const updated = await productsApi.updateProduct(id, data);
+    setProducts((prev) =>
+      prev.map((prod) => (prod.id === id ? updated : prod))
+    );
+  };
+
+  const deleteProduct = async (id: string) => {
+    await productsApi.deleteProduct(id);
+    setProducts((prev) => prev.filter((prod) => prod.id !== id));
+  };
+
+  const togglePublish = async (id: string) => {
+    const updated = await productsApi.toggleProductPublish(id);
+    setProducts((prev) =>
+      prev.map((prod) => (prod.id === id ? updated : prod))
+    );
+  };
+
+  const getProductBySlug = (slug: string) =>
+    products.find((prod) => prod.slug === slug);
+
+  const getProductById = (id: string) =>
+    products.find((prod) => prod.id === id);
+
+  const getProductsByCategory = (categoryId: string) =>
+    products.filter(
+      (prod) => prod.categoryId === categoryId && prod.isPublished
+    );
+
+  const getProductsByType = (type: ProductType) =>
+    products.filter((prod) => prod.type === type && prod.isPublished);
+
   const searchProducts = (query: string) => {
     const lowerQuery = query.toLowerCase();
-    return state.products.filter(
+    return products.filter(
       (prod) =>
         prod.isPublished &&
         (prod.title.toLowerCase().includes(lowerQuery) ||
           prod.shortDescription.toLowerCase().includes(lowerQuery))
     );
   };
-  const getPublishedProducts = () => state.products.filter((prod) => prod.isPublished);
-  const getProductCount = (categoryId: string) => state.products.filter((prod) => prod.categoryId === categoryId && prod.isPublished).length;
 
-  // Implementasi fungsi yang hilang ditambahkan di sini
-  const getProductsByType = (type: ProductType) => {
-    return state.products.filter(
-      (prod) => prod.type === type && prod.isPublished
-    );
-  };
+  const getPublishedProducts = () =>
+    products.filter((prod) => prod.isPublished);
+
+  const getProductCount = (categoryId: string) =>
+    products.filter(
+      (prod) => prod.categoryId === categoryId && prod.isPublished
+    ).length;
 
   return (
     <CatalogContext.Provider
       value={{
-        ...state,
+        categories,
+        products,
+        isLoading,
+        error,
         addCategory,
         updateCategory,
         deleteCategory,
@@ -232,11 +195,12 @@ export const CatalogProvider: React.FC<{ children: ReactNode }> = ({
         getProductBySlug,
         getProductById,
         getProductsByCategory,
+        getProductsByType,
         searchProducts,
         getPublishedProducts,
-        getProductsByType, 
         getProductCount,
-        isLoading,
+        refreshCategories,
+        refreshProducts,
       }}
     >
       {children}
