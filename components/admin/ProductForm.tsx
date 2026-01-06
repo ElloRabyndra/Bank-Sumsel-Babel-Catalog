@@ -84,7 +84,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
   // Sync productType with formData
   useEffect(() => {
     updateField("type", productType);
-  }, [productType]);
+  }, [productType, updateField]);
 
   const handleCancel = () => {
     if (hasChanges) {
