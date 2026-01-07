@@ -3,23 +3,28 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
+        pathname: "/**",
       },
-      // Tambahkan domain lain jika diperlukan
       {
-        protocol: 'https',
-        hostname: '**.cloudinary.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "**.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co", 
+        port: "",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },

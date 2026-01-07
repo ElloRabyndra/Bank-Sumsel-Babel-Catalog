@@ -20,6 +20,7 @@ import {
   Trash2,
   ImagePlus,
   X,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { uploadImage } from "@/lib/api/storage";
 
 interface PendingImage {
-  url: string;
+  file: File;
+  previewUrl: string;
   caption: string;
 }
 
@@ -53,7 +56,8 @@ const ToolbarButton = React.memo<{
   isActive?: boolean;
   children: React.ReactNode;
   title: string;
-}>(({ onClick, isActive, children, title }) => (
+  disabled?: boolean;
+}>(({ onClick, isActive, children, title, disabled }) => (
   <Button
     type="button"
     variant={isActive ? "default" : "ghost"}
@@ -61,6 +65,7 @@ const ToolbarButton = React.memo<{
     onClick={onClick}
     title={title}
     className="h-8 w-8 p-0"
+    disabled={disabled}
   >
     {children}
   </Button>
@@ -77,6 +82,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -118,14 +124,14 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     Array.from(files).forEach((file) => {
       if (file.type.startsWith("image/")) {
         newImages.push({
-          url: URL.createObjectURL(file),
+          file,
+          previewUrl: URL.createObjectURL(file),
           caption: "",
         });
       }
     });
 
     if (newImages.length > 0) {
-      // Append to existing pending images (for "add more" functionality)
       setPendingImages((prev) => [...prev, ...newImages]);
       setImageDialogOpen(true);
     }
@@ -138,7 +144,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   };
 
   const handleCancelImages = () => {
-    pendingImages.forEach((img) => URL.revokeObjectURL(img.url));
+    pendingImages.forEach((img) => URL.revokeObjectURL(img.previewUrl));
     setPendingImages([]);
     setImageDialogOpen(false);
   };
@@ -150,7 +156,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   };
 
   const removeImage = (index: number) => {
-    URL.revokeObjectURL(pendingImages[index].url);
+    URL.revokeObjectURL(pendingImages[index].previewUrl);
     setPendingImages((prev) => prev.filter((_, i) => i !== index));
     if (pendingImages.length <= 1) {
       setImageDialogOpen(false);
@@ -160,39 +166,42 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const handleInsertImages = async () => {
     if (!editor || pendingImages.length === 0) return;
 
-    // Convert all images to base64 for persistent storage
-    const converted = await Promise.all(
-      pendingImages.map(async (img, idx) => {
+    setIsUploading(true);
+
+    try {
+      // Upload all images to Supabase Storage
+      const uploadPromises = pendingImages.map(async (img, idx) => {
         const caption = img.caption.trim() || `Langkah ${idx + 1}`;
+        
+        // Upload to Supabase
+        const publicUrl = await uploadImage(img.file, 'catalog-images', 'content');
+        
+        return { src: publicUrl, caption };
+      });
 
-        const response = await fetch(img.url);
-        const blob = await response.blob();
+      const uploadedImages = await Promise.all(uploadPromises);
 
-        const src = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
+      // Insert uploaded images into editor
+      const content = uploadedImages.flatMap((img) => [
+        {
+          type: "image",
+          attrs: { src: img.src, alt: img.caption, title: img.caption },
+        },
+        { type: "paragraph" },
+      ]);
 
-        return { src, caption };
-      })
-    );
+      editor.chain().focus().insertContent(content).run();
 
-    // Insert as a single content batch so images don't overwrite each other
-    const content = converted.flatMap((img) => [
-      {
-        type: "image",
-        attrs: { src: img.src, alt: img.caption, title: img.caption },
-      },
-      { type: "paragraph" },
-    ]);
-
-    editor.chain().focus().insertContent(content).run();
-
-    // Cleanup blob URLs
-    pendingImages.forEach((img) => URL.revokeObjectURL(img.url));
-    setPendingImages([]);
-    setImageDialogOpen(false);
+      // Cleanup
+      pendingImages.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+      setPendingImages([]);
+      setImageDialogOpen(false);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert("Gagal mengupload gambar. Silakan coba lagi.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   if (!editor) {
@@ -217,6 +226,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive("bold")}
             title="Bold"
+            disabled={isUploading}
           >
             <Bold className="w-4 h-4" />
           </ToolbarButton>
@@ -224,6 +234,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive("italic")}
             title="Italic"
+            disabled={isUploading}
           >
             <Italic className="w-4 h-4" />
           </ToolbarButton>
@@ -231,6 +242,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             isActive={editor.isActive("underline")}
             title="Underline"
+            disabled={isUploading}
           >
             <UnderlineIcon className="w-4 h-4" />
           </ToolbarButton>
@@ -243,6 +255,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             }
             isActive={editor.isActive("heading", { level: 2 })}
             title="Heading 2"
+            disabled={isUploading}
           >
             <Heading2 className="w-4 h-4" />
           </ToolbarButton>
@@ -252,6 +265,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             }
             isActive={editor.isActive("heading", { level: 3 })}
             title="Heading 3"
+            disabled={isUploading}
           >
             <Heading3 className="w-4 h-4" />
           </ToolbarButton>
@@ -262,6 +276,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive("bulletList")}
             title="Bullet List"
+            disabled={isUploading}
           >
             <List className="w-4 h-4" />
           </ToolbarButton>
@@ -269,6 +284,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             isActive={editor.isActive("orderedList")}
             title="Numbered List"
+            disabled={isUploading}
           >
             <ListOrdered className="w-4 h-4" />
           </ToolbarButton>
@@ -284,6 +300,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 .run()
             }
             title="Insert Table"
+            disabled={isUploading}
           >
             <TableIcon className="w-4 h-4" />
           </ToolbarButton>
@@ -291,6 +308,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <ToolbarButton
               onClick={() => editor.chain().focus().deleteTable().run()}
               title="Delete Table"
+              disabled={isUploading}
             >
               <Trash2 className="w-4 h-4" />
             </ToolbarButton>
@@ -302,8 +320,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <ToolbarButton
             onClick={() => fileInputRef.current?.click()}
             title="Upload Gambar (bisa pilih banyak)"
+            disabled={isUploading}
           >
-            <ImagePlus className="w-4 h-4" />
+            {isUploading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <ImagePlus className="w-4 h-4" />
+            )}
           </ToolbarButton>
           <input
             ref={fileInputRef}
@@ -312,12 +335,20 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             multiple
             onChange={handleImageUpload}
             className="hidden"
+            disabled={isUploading}
           />
         </div>
 
         {/* Editor */}
         <EditorContent editor={editor} className="tiptap-editor" />
       </div>
+
+      {isUploading && (
+        <p className="text-xs text-primary flex items-center gap-1">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          Mengupload gambar ke Supabase Storage...
+        </p>
+      )}
 
       <Dialog
         open={imageDialogOpen}
@@ -335,28 +366,27 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="space-y-4">
             {pendingImages.map((img, idx) => (
               <div
-                key={img.url}
+                key={idx}
                 className="flex gap-3 items-start p-3 border border-border rounded-lg bg-muted/20"
               >
-                {/* Thumbnail kecil */}
                 <div className="relative shrink-0 w-20 h-20 rounded-md overflow-hidden border border-border">
                   <Image
-                    src={img.url}
+                    src={img.previewUrl}
                     alt={`Preview ${idx + 1}`}
                     fill
-                    unoptimized 
+                    unoptimized
                     className="w-full h-full object-cover"
                   />
                   <button
                     type="button"
                     onClick={() => removeImage(idx)}
                     className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                    disabled={isUploading}
                   >
                     <X className="w-3 h-3" />
                   </button>
                 </div>
 
-                {/* Caption input */}
                 <div className="flex-1 space-y-1">
                   <label className="text-xs font-medium text-muted-foreground">
                     Keterangan Langkah {idx + 1}
@@ -364,10 +394,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   <Input
                     value={img.caption}
                     onChange={(e) => updateCaption(idx, e.target.value)}
-                    placeholder={`Contoh: Langkah ${
-                      idx + 1
-                    } — Isi formulir pendaftaran`}
+                    placeholder={`Contoh: Langkah ${idx + 1} — Isi formulir pendaftaran`}
                     className="text-sm"
+                    disabled={isUploading}
                   />
                 </div>
               </div>
@@ -375,8 +404,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Keterangan akan tampil saat gambar di-zoom pada halaman detail
-            konten.
+            Keterangan akan tampil saat gambar di-zoom pada halaman detail konten.
           </p>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -385,6 +413,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               variant="secondary"
               onClick={handleAddMoreImages}
               className="sm:mr-auto"
+              disabled={isUploading}
             >
               <ImagePlus className="w-4 h-4 mr-2" />
               Tambah Gambar Lagi
@@ -393,18 +422,28 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               type="button"
               variant="outline"
               onClick={handleCancelImages}
+              disabled={isUploading}
             >
               Batal
             </Button>
             <Button
               type="button"
               onClick={handleInsertImages}
-              disabled={pendingImages.length === 0}
+              disabled={pendingImages.length === 0 || isUploading}
             >
-              Sisipkan{" "}
-              {pendingImages.length > 1
-                ? `${pendingImages.length} Gambar`
-                : "Gambar"}
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Mengupload...
+                </>
+              ) : (
+                <>
+                  Sisipkan{" "}
+                  {pendingImages.length > 1
+                    ? `${pendingImages.length} Gambar`
+                    : "Gambar"}
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

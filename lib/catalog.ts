@@ -1,57 +1,48 @@
 import { Category, Product } from "@/types";
-import { initialCategories, createInitialProducts } from "@/data/mockData";
-
-// Data di-cache di memory (untuk development)
-const categories: Category[] = initialCategories;
-const products: Product[] = createInitialProducts(categories);
+import * as categoriesApi from "@/lib/api/categories";
+import * as productsApi from "@/lib/api/products";
 
 // ============================================
-// CATEGORY FUNCTIONS
+// CATEGORY FUNCTIONS (Server-side compatible)
 // ============================================
 
-export function getCategoryBySlug(slug: string): Category | undefined {
-  return categories.find((cat) => cat.slug === slug);
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  return await categoriesApi.fetchCategoryBySlug(slug);
 }
 
-export function getCategoryById(id: string): Category | undefined {
-  return categories.find((cat) => cat.id === id);
+export async function getCategoryById(id: string): Promise<Category | null> {
+  return await categoriesApi.fetchCategoryById(id);
 }
 
-export function getProductsByType(type: "produk" | "layanan"): Product[] {
-  return products.filter((p) => p.type === type && p.isPublished);
-}
-
-export function getAllCategories(): Category[] {
-  return categories;
+export async function getAllCategories(): Promise<Category[]> {
+  return await categoriesApi.fetchCategories();
 }
 
 // ============================================
-// PRODUCT FUNCTIONS
+// PRODUCT FUNCTIONS (Server-side compatible)
 // ============================================
 
-export function getProductsByCategory(categoryId: string): Product[] {
-  return products.filter((p) => p.categoryId === categoryId && p.isPublished);
+export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
+  return await productsApi.fetchProductsByCategory(categoryId);
 }
 
-export function getProductBySlug(slug: string): Product | undefined {
-  return products.find((p) => p.slug === slug);
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  return await productsApi.fetchProductBySlug(slug);
 }
 
-export function getPublishedProducts(): Product[] {
-  return products.filter((p) => p.isPublished);
+export async function getProductsByType(type: "produk" | "layanan"): Promise<Product[]> {
+  return await productsApi.fetchProductsByType(type);
 }
 
-export function searchProducts(query: string): Product[] {
-  const q = query.toLowerCase();
-  return products.filter(
-    (p) =>
-      p.isPublished &&
-      (p.title.toLowerCase().includes(q) ||
-        p.shortDescription.toLowerCase().includes(q))
-  );
+export async function getPublishedProducts(): Promise<Product[]> {
+  return await productsApi.fetchPublishedProducts();
 }
 
-export function getProductCount(categoryId: string): number {
-  return products.filter((p) => p.categoryId === categoryId && p.isPublished)
-    .length;
+export async function searchProducts(query: string): Promise<Product[]> {
+  return await productsApi.searchProducts(query);
+}
+
+export async function getProductCount(categoryId: string): Promise<number> {
+  const products = await getProductsByCategory(categoryId);
+  return products.length;
 }
