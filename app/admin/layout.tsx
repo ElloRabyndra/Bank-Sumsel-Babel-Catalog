@@ -1,28 +1,54 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { LayoutDashboard, FolderTree, Package } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import Image from "next/image"
+import { LayoutDashboard, FolderTree, Package, LogOut } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 const adminNavItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/kategori", label: "Kategori", icon: FolderTree },
   { href: "/admin/konten", label: "Konten", icon: Package },
-];
+]
 
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname()
+  const router = useRouter()
+  const { toast } = useToast()
 
   const isActive = (href: string, exact?: boolean) => {
-    if (exact) return pathname === href;
-    return pathname?.startsWith(href);
-  };
+    if (exact) return pathname === href
+    return pathname?.startsWith(href)
+  }
+
+  const handleLogout = async () => {
+    try {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      
+      toast({
+        title: "Berhasil",
+        description: "Anda telah keluar dari sistem",
+      })
+      
+      router.push('/login')
+      router.refresh()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal logout",
+        variant: "destructive",
+      })
+    }
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -39,6 +65,17 @@ export default function AdminLayout({
                 priority
               />
             </Link>
+
+            {/* Logout Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Keluar</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -67,5 +104,5 @@ export default function AdminLayout({
         <main>{children}</main>
       </div>
     </div>
-  );
+  )
 }
