@@ -41,7 +41,7 @@ export default function AdminLayout({
       
       router.push('/login')
       router.refresh()
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Gagal logout",
