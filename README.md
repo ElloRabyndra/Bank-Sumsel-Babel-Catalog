@@ -4,16 +4,16 @@
 
 A modern web portal for showcasing and managing Bank Sumsel Babel's banking products and services. Built with Next.js, TypeScript, and Supabase, this application provides a comprehensive content management system (CMS) for administrators and an intuitive browsing experience for customers.
 
-## ✨ Features
+## Features
 
-### 🌐 Public-Facing Features
+### Public-Facing Features
 
 - **Homepage**
   - Hero section with search functionality
   - Collapsible product and service listings
   - Categorized display of banking products and services
-- **Product Catalog**
 
+- **Product Catalog**
   - Browse products by category
   - Detailed product pages with comprehensive information
   - Tabbed content sections: Product Overview, Key Features, Benefits, Risks, Requirements, Costs, and Additional Information
@@ -32,7 +32,13 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
   - Optimized for all screen sizes
   - Touch-friendly interface
 
-### 🔐 Admin Panel Features
+### Admin Panel Features
+
+- **Authentication & Security**
+  - Secure login system with Supabase Auth
+  - Protected admin routes with middleware
+  - Session management and auto-refresh
+  - Logout functionality
 
 - **Dashboard**
 
@@ -73,10 +79,10 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
   - Multiple image upload support
   - Drag-and-drop interface
   - Image preview and lightbox
-  - Cloud storage with Supabase
+  - Cloud storage with Supabase Storage
   - Automatic image optimization
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category          | Technology                                                           |
 | ----------------- | -------------------------------------------------------------------- |
@@ -86,6 +92,7 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
 | Styling           | [Tailwind CSS 4](https://tailwindcss.com/)                           |
 | UI Components     | [shadcn/ui](https://ui.shadcn.com/) (Radix UI)                       |
 | Backend (BaaS)    | [Supabase](https://supabase.com/)                                    |
+| Authentication    | [Supabase Auth](https://supabase.com/auth)                           |
 | Database          | PostgreSQL (via Supabase)                                            |
 | Storage           | Supabase Storage                                                     |
 | State Management  | [React Context API](https://react.dev/reference/react/createContext) |
@@ -96,26 +103,34 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
 | Icons             | [Lucide React](https://lucide.dev/)                                  |
 | Notifications     | [Sonner](https://sonner.emilkowal.ski/)                              |
 
-## 📁 Project Structure
-
+## Project Structure
 ```
 Bank-Sumsel-Babel-Catalog/
 ├── app/                          # Next.js App Router
+│   ├── auth/                     # Auth routes
+│   │   └── callback/             # OAuth callback handler
+│   ├── login/                    # Login page
 │   ├── kategori/[slug]/          # Category detail pages
 │   ├── produk/[slug]/            # Product detail pages
 │   ├── search/                   # Search page
-│   ├── admin/                    # Admin panel
+│   ├── admin/                    # Admin panel (protected)
 │   │   ├── kategori/             # Category management
 │   │   ├── konten/               # Product management
 │   │   │   ├── tambah/           # Add product
 │   │   │   └── edit/[id]/        # Edit product
-│   │   ├── layout.tsx            # Admin layout
+│   │   ├── layout.tsx            # Admin layout with logout
 │   │   └── page.tsx              # Dashboard
 │   ├── layout.tsx                # Root layout
 │   ├── page.tsx                  # Homepage
 │   └── not-found.tsx             # 404 page
 │
 ├── components/                   # React components
+│   ├── auth/                     # Authentication components
+│   │   ├── LoginForm.tsx         # Main login form
+│   │   ├── LoginBranding.tsx     # Login page branding
+│   │   ├── LoginHeader.tsx       # Login page header
+│   │   ├── LoginFormFields.tsx   # Form input fields
+│   │   └── useLoginForm.ts       # Login form logic hook
 │   ├── admin/                    # Admin-specific components
 │   │   ├── dashboard/            # Dashboard components
 │   │   ├── kategori/             # Category management
@@ -152,8 +167,10 @@ Bank-Sumsel-Babel-Catalog/
 │   │   ├── products.ts           # Product CRUD
 │   │   └── storage.ts            # File operations
 │   ├── supabase/                 # Supabase config
-│   │   └── server.ts
-│   ├── supabase.ts               # Client config
+│   │   ├── client.ts             # Browser client
+│   │   ├── server-client.ts      # Server client
+│   │   └── server.ts             # Server utilities
+│   ├── supabase.ts               # Legacy client config
 │   ├── utils.ts
 │   └── constants.ts
 │
@@ -167,12 +184,14 @@ Bank-Sumsel-Babel-Catalog/
 ├── scripts/                      # Utility scripts
 │   └── migrate-to-supabase.ts    # Data migration
 │
+├── middleware.ts                 # Next.js middleware for auth
+│
 └── public/                       # Static assets
     ├── logo.png
     └── logo-white.png
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -183,39 +202,35 @@ Bank-Sumsel-Babel-Catalog/
 ### Installation
 
 1. **Clone the repository**
-
-   ```bash
+```bash
    git clone https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog.git
    cd Bank-Sumsel-Babel-Catalog
-   ```
+```
 
 2. **Install dependencies**
-
-   ```bash
+```bash
    npm install
    # or
    pnpm install
    # or
    yarn install
-   ```
+```
 
 3. **Set up environment variables**
 
    Create environment files in the root directory:
 
    **For local development** (`.env.local`):
-
-   ```env
+```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+```
 
    **For production/deployment** (`.env`):
-
-   ```env
+```env
    NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
-   ```
+```
 
    > **Note**: `.env.local` is used for local development and is ignored by Git. `.env` can be used for production deployment or as a template.
 
@@ -224,8 +239,7 @@ Bank-Sumsel-Babel-Catalog/
 4. **Set up Supabase database**
 
    Run the following SQL in your Supabase SQL Editor:
-
-   ```sql
+```sql
    -- Create categories table
    CREATE TABLE categories (
      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -291,9 +305,30 @@ Bank-Sumsel-Babel-Catalog/
      BEFORE UPDATE ON products
      FOR EACH ROW
      EXECUTE FUNCTION update_updated_at_column();
-   ```
+```
 
-5. **Create Supabase Storage bucket**
+5. **Configure Supabase Authentication**
+
+   In your Supabase Dashboard:
+   
+   - Go to **Authentication** → **Settings**
+   - Add **Site URL**: 
+     - Development: `http://localhost:3000`
+     - Production: `https://your-domain.com`
+   - Add **Redirect URLs**:
+     - Development: `http://localhost:3000/auth/callback`
+     - Production: `https://your-domain.com/auth/callback`
+
+6. **Create Admin User**
+
+   In Supabase Dashboard → **Authentication** → **Users**:
+   
+   - Click **Add User** → **Create New User**
+   - Enter admin email and password
+   - Check **Auto Confirm User**
+   - Click **Create User**
+
+7. **Create Supabase Storage bucket**
 
    In your Supabase dashboard:
 
@@ -301,23 +336,21 @@ Bank-Sumsel-Babel-Catalog/
    - Create a new bucket named `catalog-images`
    - Set it to **Public**
 
-6. **Migrate initial data (optional)**
-
-   ```bash
+8. **Migrate initial data (optional)**
+```bash
    npm run migrate
-   ```
+```
 
-7. **Run the development server**
-
-   ```bash
+9. **Run the development server**
+```bash
    npm run dev
-   ```
+```
 
-8. **Open your browser**
+10. **Open your browser**
 
-   Navigate to [http://localhost:3000](http://localhost:3000)
+    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📖 Usage
+## Usage
 
 ### Public Site
 
@@ -328,27 +361,18 @@ Bank-Sumsel-Babel-Catalog/
 
 ### Admin Panel
 
-Access the admin panel at `/admin`:
+Access the admin panel at `/admin` (requires login):
 
+- **Login** (`/login`): Authenticate with admin credentials
 - **Dashboard** (`/admin`): View catalog statistics and recent products
 - **Kategori** (`/admin/kategori`): Manage product categories
 - **Konten** (`/admin/konten`): Manage products and services
   - Add new product: `/admin/konten/tambah`
   - Edit product: `/admin/konten/edit/[id]`
 
-**Note**: All data is persisted in Supabase PostgreSQL database and images are stored in Supabase Storage.
+**Note**: All admin routes are protected and require authentication. Unauthorized users will be redirected to the login page.
 
-## 🔧 Available Scripts
-
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm start        # Start production server
-npm run lint     # Run ESLint
-npm run migrate  # Migrate initial data to Supabase
-```
-
-## 🗄️ Database Schema
+## Database Schema
 
 ### Categories Table
 
@@ -391,17 +415,42 @@ npm run migrate  # Migrate initial data to Supabase
 | created_at         | TIMESTAMP | Creation timestamp          |
 | updated_at         | TIMESTAMP | Last update timestamp       |
 
-## 🌐 Deployment
+## Authentication & Security
+
+This application uses **Supabase Auth** for secure authentication:
+
+- **Protected Routes**: All `/admin/*` routes require authentication
+- **Middleware**: Next.js middleware automatically redirects unauthorized users
+- **Session Management**: Automatic session refresh and token management
+- **Secure Logout**: Properly destroys user sessions
+
+### Default Admin Access
+
+After setting up, log in with the admin credentials you created in Supabase Auth.
+
+### Security Best Practices
+
+- Never commit `.env.local` or `.env` files with real credentials
+- Use environment variables for all sensitive data
+- Enable Row Level Security (RLS) in Supabase for production
+- Regularly rotate admin passwords
+
+## Deployment
 
 This project is optimized for deployment on [Vercel](https://vercel.com/):
 
 1. Push your code to GitHub
 2. Import the project in Vercel
-3. Add environment variables in Vercel project settings
-4. Deploy
+3. Add environment variables in Vercel project settings:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Update Supabase **Site URL** and **Redirect URLs** with your production domain
+5. Deploy
 
 The application will automatically build and deploy on every push to the main branch.
-   >Project Link: [Bank-Sumsel-Babel-Catalog](https://bank-sumsel-babel-catalog.vercel.app/)
 
+> **Live Demo**: [Bank-Sumsel-Babel-Catalog](https://bank-sumsel-babel-catalog.vercel.app/)
 
-**Built with ❤️ for Bank Sumsel Babel**
+---
+
+**Built for Bank Sumsel Babel**
