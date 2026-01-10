@@ -12,8 +12,8 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
   - Hero section with search functionality
   - Collapsible product and service listings
   - Categorized display of banking products and services
-  
 - **Product Catalog**
+
   - Browse products by category
   - Detailed product pages with comprehensive information
   - Tabbed content sections: Product Overview, Key Features, Benefits, Risks, Requirements, Costs, and Additional Information
@@ -22,6 +22,7 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
   - Related products recommendations
 
 - **Search & Filter**
+
   - Real-time product search
   - Category-based filtering
   - Search across product titles and descriptions
@@ -34,17 +35,20 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
 ### 🔐 Admin Panel Features
 
 - **Dashboard**
+
   - Catalog statistics overview (total categories, products, published/draft status)
   - Recent products table with quick actions
   - Visual analytics
 
 - **Category Management**
+
   - Create, read, update, and delete categories
   - Drag-and-drop thumbnail upload
   - Icon selection from Lucide icon library
   - Custom ordering with order index
 
 - **Product/Service Management**
+
   - Comprehensive CRUD operations
   - Three-tab form interface:
     - **Basic Info**: Category, type (product/service), title, short description, publish status
@@ -56,6 +60,7 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
   - Draft auto-save
 
 - **Rich Text Editor**
+
   - Tiptap-based WYSIWYG editor
   - Text formatting (bold, italic, underline)
   - Headings (H2, H3)
@@ -73,23 +78,23 @@ A modern web portal for showcasing and managing Bank Sumsel Babel's banking prod
 
 ## 🛠️ Tech Stack
 
-| Category            | Technology                                                    |
-| ------------------- | ------------------------------------------------------------- |
-| Framework           | [Next.js 15](https://nextjs.org/)                             |
-| Language            | [TypeScript 5](https://www.typescriptlang.org/)              |
-| UI Library          | [React 19](https://react.dev/)                               |
-| Styling             | [Tailwind CSS 4](https://tailwindcss.com/)                    |
-| UI Components       | [shadcn/ui](https://ui.shadcn.com/) (Radix UI)                |
-| Backend (BaaS)      | [Supabase](https://supabase.com/)                             |
-| Database            | PostgreSQL (via Supabase)                                     |
-| Storage             | Supabase Storage                                              |
-| State Management    | [React Context API](https://react.dev/reference/react/createContext) |
-| Data Fetching       | [TanStack Query](https://tanstack.com/query/latest)           |
-| Form Management     | [React Hook Form](https://react-hook-form.com/)               |
-| Schema Validation   | [Zod](https://zod.dev/)                                       |
-| Rich Text Editor    | [Tiptap](https://tiptap.dev/)                                 |
-| Icons               | [Lucide React](https://lucide.dev/)                           |
-| Notifications       | [Sonner](https://sonner.emilkowal.ski/)                       |
+| Category          | Technology                                                           |
+| ----------------- | -------------------------------------------------------------------- |
+| Framework         | [Next.js 15](https://nextjs.org/)                                    |
+| Language          | [TypeScript 5](https://www.typescriptlang.org/)                      |
+| UI Library        | [React 19](https://react.dev/)                                       |
+| Styling           | [Tailwind CSS 4](https://tailwindcss.com/)                           |
+| UI Components     | [shadcn/ui](https://ui.shadcn.com/) (Radix UI)                       |
+| Backend (BaaS)    | [Supabase](https://supabase.com/)                                    |
+| Database          | PostgreSQL (via Supabase)                                            |
+| Storage           | Supabase Storage                                                     |
+| State Management  | [React Context API](https://react.dev/reference/react/createContext) |
+| Data Fetching     | [TanStack Query](https://tanstack.com/query/latest)                  |
+| Form Management   | [React Hook Form](https://react-hook-form.com/)                      |
+| Schema Validation | [Zod](https://zod.dev/)                                              |
+| Rich Text Editor  | [Tiptap](https://tiptap.dev/)                                        |
+| Icons             | [Lucide React](https://lucide.dev/)                                  |
+| Notifications     | [Sonner](https://sonner.emilkowal.ski/)                              |
 
 ## 📁 Project Structure
 
@@ -178,12 +183,14 @@ Bank-Sumsel-Babel-Catalog/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog.git
    cd Bank-Sumsel-Babel-Catalog
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -193,23 +200,25 @@ Bank-Sumsel-Babel-Catalog/
    ```
 
 3. **Set up environment variables**
-   
+
    Create environment files in the root directory:
-   
+
    **For local development** (`.env.local`):
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
-   
+
    **For production/deployment** (`.env`):
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
    ```
 
    > **Note**: `.env.local` is used for local development and is ignored by Git. `.env` can be used for production deployment or as a template.
-   
+
    Get these values from your [Supabase project settings](https://supabase.com/dashboard).
 
 4. **Set up Supabase database**
@@ -287,22 +296,25 @@ Bank-Sumsel-Babel-Catalog/
 5. **Create Supabase Storage bucket**
 
    In your Supabase dashboard:
+
    - Go to **Storage**
    - Create a new bucket named `catalog-images`
    - Set it to **Public**
 
 6. **Migrate initial data (optional)**
+
    ```bash
    npm run migrate
    ```
 
 7. **Run the development server**
+
    ```bash
    npm run dev
    ```
 
 8. **Open your browser**
-   
+
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📖 Usage
@@ -340,44 +352,44 @@ npm run migrate  # Migrate initial data to Supabase
 
 ### Categories Table
 
-| Column        | Type      | Description                    |
-| ------------- | --------- | ------------------------------ |
-| id            | UUID      | Primary key                    |
-| name          | TEXT      | Category name                  |
-| slug          | TEXT      | URL-friendly identifier        |
-| description   | TEXT      | Category description           |
-| icon          | TEXT      | Lucide icon name               |
-| thumbnail_url | TEXT      | Category thumbnail image URL   |
-| order_index   | INTEGER   | Display order                  |
-| created_at    | TIMESTAMP | Creation timestamp             |
-| updated_at    | TIMESTAMP | Last update timestamp          |
+| Column        | Type      | Description                  |
+| ------------- | --------- | ---------------------------- |
+| id            | UUID      | Primary key                  |
+| name          | TEXT      | Category name                |
+| slug          | TEXT      | URL-friendly identifier      |
+| description   | TEXT      | Category description         |
+| icon          | TEXT      | Lucide icon name             |
+| thumbnail_url | TEXT      | Category thumbnail image URL |
+| order_index   | INTEGER   | Display order                |
+| created_at    | TIMESTAMP | Creation timestamp           |
+| updated_at    | TIMESTAMP | Last update timestamp        |
 
 ### Products Table
 
-| Column               | Type      | Description                     |
-| -------------------- | --------- | ------------------------------- |
-| id                   | UUID      | Primary key                     |
-| category_id          | UUID      | Foreign key to categories       |
-| type                 | TEXT      | 'produk' or 'layanan'           |
-| title                | TEXT      | Product/service title           |
-| slug                 | TEXT      | URL-friendly identifier         |
-| thumbnail_url        | TEXT      | Thumbnail image URL             |
-| short_description    | TEXT      | Brief description (max 200)     |
-| kenali_produk        | TEXT      | Product overview (HTML)         |
-| nama_penerbit        | TEXT      | Publisher name                  |
-| fitur_utama          | TEXT      | Key features (HTML)             |
-| manfaat              | TEXT      | Benefits (HTML)                 |
-| risiko               | TEXT      | Risks (HTML)                    |
-| persyaratan          | TEXT      | Requirements (HTML)             |
-| biaya                | TEXT      | Costs (HTML)                    |
-| informasi_tambahan   | TEXT      | Additional info (HTML)          |
-| featured_image_url   | TEXT      | Featured image URL              |
-| youtube_video_url    | TEXT      | YouTube video URL               |
-| gallery_images       | TEXT[]    | Array of gallery image URLs     |
-| is_published         | BOOLEAN   | Publication status              |
-| order_index          | INTEGER   | Display order                   |
-| created_at           | TIMESTAMP | Creation timestamp              |
-| updated_at           | TIMESTAMP | Last update timestamp           |
+| Column             | Type      | Description                 |
+| ------------------ | --------- | --------------------------- |
+| id                 | UUID      | Primary key                 |
+| category_id        | UUID      | Foreign key to categories   |
+| type               | TEXT      | 'produk' or 'layanan'       |
+| title              | TEXT      | Product/service title       |
+| slug               | TEXT      | URL-friendly identifier     |
+| thumbnail_url      | TEXT      | Thumbnail image URL         |
+| short_description  | TEXT      | Brief description (max 200) |
+| kenali_produk      | TEXT      | Product overview (HTML)     |
+| nama_penerbit      | TEXT      | Publisher name              |
+| fitur_utama        | TEXT      | Key features (HTML)         |
+| manfaat            | TEXT      | Benefits (HTML)             |
+| risiko             | TEXT      | Risks (HTML)                |
+| persyaratan        | TEXT      | Requirements (HTML)         |
+| biaya              | TEXT      | Costs (HTML)                |
+| informasi_tambahan | TEXT      | Additional info (HTML)      |
+| featured_image_url | TEXT      | Featured image URL          |
+| youtube_video_url  | TEXT      | YouTube video URL           |
+| gallery_images     | TEXT[]    | Array of gallery image URLs |
+| is_published       | BOOLEAN   | Publication status          |
+| order_index        | INTEGER   | Display order               |
+| created_at         | TIMESTAMP | Creation timestamp          |
+| updated_at         | TIMESTAMP | Last update timestamp       |
 
 ## 🌐 Deployment
 
@@ -389,34 +401,10 @@ This project is optimized for deployment on [Vercel](https://vercel.com/):
 4. Deploy
 
 The application will automatically build and deploy on every push to the main branch.
-
-## 🤝 Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Project Link: [https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog](https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog)
 
 ## 📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-## 📧 Contact
-
-Project Link: [https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog](https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog)
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/)
-- [Supabase](https://supabase.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tiptap](https://tiptap.dev/)
-- [Lucide Icons](https://lucide.dev/)
-
----
 
 **Built with ❤️ for Bank Sumsel Babel**
