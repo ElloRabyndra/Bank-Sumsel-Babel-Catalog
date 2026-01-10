@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { createClient } from "@/lib/supabase/client"
+import Image from "next/image"
+
 
 export default function LoginForm() {
   const router = useRouter()
@@ -76,7 +78,13 @@ export default function LoginForm() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <div>
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logo-white.png" alt="Logo" className="h-10" />
+              <Image
+                src="/logo-white.png"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="h-10 w-10"
+              />
             </Link>
           </div>
 
@@ -122,7 +130,13 @@ export default function LoginForm() {
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
             <Link href="/">
-              <img src="/logo.png" alt="Logo" className="h-10" />
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="h-10 w-10"
+              />
             </Link>
           </div>
 
