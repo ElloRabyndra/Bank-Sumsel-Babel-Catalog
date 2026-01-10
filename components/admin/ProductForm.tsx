@@ -87,15 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ productId }) => {
   }, [productType, updateField]);
 
   const handleCancel = () => {
-    if (hasChanges) {
-      if (
-        window.confirm("Ada perubahan yang belum disimpan. Yakin ingin keluar?")
-      ) {
-        router.push("/admin/konten");
-      }
-    } else {
-      router.push("/admin/konten");
-    }
+    router.push("/admin/konten");
   };
 
   return (
