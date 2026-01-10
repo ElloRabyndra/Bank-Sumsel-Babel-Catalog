@@ -401,10 +401,7 @@ This project is optimized for deployment on [Vercel](https://vercel.com/):
 4. Deploy
 
 The application will automatically build and deploy on every push to the main branch.
-Project Link: [https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog](https://github.com/ElloRabyndra/Bank-Sumsel-Babel-Catalog)
+   >Project Link: [Bank-Sumsel-Babel-Catalog](https://bank-sumsel-babel-catalog.vercel.app/)
 
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 **Built with ❤️ for Bank Sumsel Babel**
