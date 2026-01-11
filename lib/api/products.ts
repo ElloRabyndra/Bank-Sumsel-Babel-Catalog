@@ -1,6 +1,7 @@
 import { supabase, Database } from '@/lib/supabase';
 import { Product, ProductType } from '@/types';
 import { generateSlug } from '@/lib/utils';
+import { deleteImage } from './storage';
 
 type ProductRow = Database['public']['Tables']['products']['Row'];
 type ProductInsert = Database['public']['Tables']['products']['Insert'];
@@ -55,6 +56,68 @@ function productToDb(product: Omit<Product, 'id' | 'slug' | 'createdAt' | 'updat
     is_published: product.isPublished,
     order_index: product.orderIndex,
   };
+}
+
+/**
+ * Helper function to extract images from HTML content
+ */
+function extractImagesFromHtml(html: string): string[] {
+  const imgRegex = /<img[^>]+src="([^">]+)"/g;
+  const images: string[] = [];
+  let match;
+  
+  while ((match = imgRegex.exec(html)) !== null) {
+    const src = match[1];
+    // Only include Supabase storage URLs
+    if (src.includes('supabase.co/storage')) {
+      images.push(src);
+    }
+  }
+  
+  return images;
+}
+
+/**
+ * Collect all image URLs from a product
+ */
+function getAllProductImages(product: Product): string[] {
+  const images: string[] = [];
+  
+  // Thumbnail
+  if (product.thumbnailUrl?.includes('supabase')) {
+    images.push(product.thumbnailUrl);
+  }
+  
+  // Featured image
+  if (product.featuredImageUrl?.includes('supabase')) {
+    images.push(product.featuredImageUrl);
+  }
+  
+  // Gallery images
+  product.galleryImages?.forEach(img => {
+    if (img.includes('supabase')) {
+      images.push(img);
+    }
+  });
+  
+  // Images in rich text content
+  const htmlFields = [
+    product.kenaliProduk,
+    product.fiturUtama,
+    product.manfaat,
+    product.risiko,
+    product.persyaratan,
+    product.biaya,
+    product.informasiTambahan,
+  ];
+  
+  htmlFields.forEach(html => {
+    if (html) {
+      images.push(...extractImagesFromHtml(html));
+    }
+  });
+  
+  return [...new Set(images)]; // Remove duplicates
 }
 
 // API Functions
@@ -162,6 +225,9 @@ export async function updateProduct(
   id: string,
   updates: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Product> {
+  // Fetch old product data to handle image replacements
+  const oldProduct = await fetchProductById(id);
+  
   const dbUpdates: Partial<ProductInsert> = {};
   
   if (updates.categoryId !== undefined) dbUpdates.category_id = updates.categoryId;
@@ -170,7 +236,50 @@ export async function updateProduct(
     dbUpdates.title = updates.title;
     dbUpdates.slug = generateSlug(updates.title);
   }
-  if (updates.thumbnailUrl !== undefined) dbUpdates.thumbnail_url = updates.thumbnailUrl;
+  
+  // Handle thumbnail replacement
+  if (updates.thumbnailUrl !== undefined) {
+    if (oldProduct?.thumbnailUrl && 
+        oldProduct.thumbnailUrl !== updates.thumbnailUrl &&
+        oldProduct.thumbnailUrl.includes('supabase')) {
+      await deleteImage(oldProduct.thumbnailUrl).catch(err => 
+        console.warn('Failed to delete old thumbnail:', err)
+      );
+    }
+    dbUpdates.thumbnail_url = updates.thumbnailUrl;
+  }
+  
+  // Handle featured image replacement
+  if (updates.featuredImageUrl !== undefined) {
+    if (oldProduct?.featuredImageUrl && 
+        oldProduct.featuredImageUrl !== updates.featuredImageUrl &&
+        oldProduct.featuredImageUrl.includes('supabase')) {
+      await deleteImage(oldProduct.featuredImageUrl).catch(err => 
+        console.warn('Failed to delete old featured image:', err)
+      );
+    }
+    dbUpdates.featured_image_url = updates.featuredImageUrl || null;
+  }
+  
+  // Handle gallery images
+  if (updates.galleryImages !== undefined) {
+    // Delete removed gallery images
+    if (oldProduct?.galleryImages) {
+      const removedImages = oldProduct.galleryImages.filter(
+        img => !updates.galleryImages?.includes(img) && img.includes('supabase')
+      );
+      
+      await Promise.all(
+        removedImages.map(img => 
+          deleteImage(img).catch(err => 
+            console.warn('Failed to delete gallery image:', err)
+          )
+        )
+      );
+    }
+    dbUpdates.gallery_images = updates.galleryImages;
+  }
+  
   if (updates.shortDescription !== undefined) dbUpdates.short_description = updates.shortDescription;
   if (updates.kenaliProduk !== undefined) dbUpdates.kenali_produk = updates.kenaliProduk || null;
   if (updates.namaPenerbit !== undefined) dbUpdates.nama_penerbit = updates.namaPenerbit || null;
@@ -180,9 +289,7 @@ export async function updateProduct(
   if (updates.persyaratan !== undefined) dbUpdates.persyaratan = updates.persyaratan || null;
   if (updates.biaya !== undefined) dbUpdates.biaya = updates.biaya || null;
   if (updates.informasiTambahan !== undefined) dbUpdates.informasi_tambahan = updates.informasiTambahan || null;
-  if (updates.featuredImageUrl !== undefined) dbUpdates.featured_image_url = updates.featuredImageUrl || null;
   if (updates.youtubeVideoUrl !== undefined) dbUpdates.youtube_video_url = updates.youtubeVideoUrl || null;
-  if (updates.galleryImages !== undefined) dbUpdates.gallery_images = updates.galleryImages;
   if (updates.isPublished !== undefined) dbUpdates.is_published = updates.isPublished;
   if (updates.orderIndex !== undefined) dbUpdates.order_index = updates.orderIndex;
 
@@ -220,10 +327,37 @@ export async function toggleProductPublish(id: string): Promise<Product> {
 }
 
 export async function deleteProduct(id: string): Promise<void> {
+  // 1. Fetch product to get all image URLs
+  const product = await fetchProductById(id);
+  
+  if (!product) {
+    throw new Error('Product not found');
+  }
+  
+  // 2. Delete from database first
   const { error } = await supabase
     .from('products')
     .delete()
     .eq('id', id);
 
   if (error) throw error;
+  
+  // 3. Delete all associated images from storage
+  const imagesToDelete = getAllProductImages(product);
+  
+  if (imagesToDelete.length > 0) {
+    console.log(`Deleting ${imagesToDelete.length} images for product: ${product.title}`);
+    
+    // Delete images in parallel but don't fail if some deletions fail
+    await Promise.allSettled(
+      imagesToDelete.map(async (imageUrl) => {
+        try {
+          await deleteImage(imageUrl);
+          console.log(`✓ Deleted: ${imageUrl}`);
+        } catch (err) {
+          console.warn(`✗ Failed to delete: ${imageUrl}`, err);
+        }
+      })
+    );
+  }
 }

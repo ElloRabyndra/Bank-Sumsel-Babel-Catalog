@@ -1,6 +1,7 @@
 import { supabase, Database } from '@/lib/supabase';
 import { Category } from '@/types';
 import { generateSlug } from '@/lib/utils';
+import { deleteImage } from './storage';
 
 type CategoryRow = Database['public']['Tables']['categories']['Row'];
 type CategoryInsert = Database['public']['Tables']['categories']['Insert'];
@@ -89,6 +90,9 @@ export async function updateCategory(
   id: string,
   updates: Partial<Omit<Category, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Category> {
+  // Fetch old category to handle thumbnail replacement
+  const oldCategory = await fetchCategoryById(id);
+  
   const dbUpdates: Partial<CategoryInsert> = {};
   
   if (updates.name !== undefined) {
@@ -97,7 +101,19 @@ export async function updateCategory(
   }
   if (updates.description !== undefined) dbUpdates.description = updates.description;
   if (updates.icon !== undefined) dbUpdates.icon = updates.icon;
-  if (updates.thumbnailUrl !== undefined) dbUpdates.thumbnail_url = updates.thumbnailUrl;
+  
+  // Handle thumbnail replacement
+  if (updates.thumbnailUrl !== undefined) {
+    if (oldCategory?.thumbnailUrl && 
+        oldCategory.thumbnailUrl !== updates.thumbnailUrl &&
+        oldCategory.thumbnailUrl.includes('supabase')) {
+      await deleteImage(oldCategory.thumbnailUrl).catch(err => 
+        console.warn('Failed to delete old category thumbnail:', err)
+      );
+    }
+    dbUpdates.thumbnail_url = updates.thumbnailUrl;
+  }
+  
   if (updates.orderIndex !== undefined) dbUpdates.order_index = updates.orderIndex;
 
   const { data, error } = await supabase
@@ -112,10 +128,26 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string): Promise<void> {
+  const category = await fetchCategoryById(id);
+  
+  if (!category) {
+    throw new Error('Category not found');
+  }
+  
   const { error } = await supabase
     .from('categories')
     .delete()
     .eq('id', id);
 
   if (error) throw error;
+  
+  // 3. Delete thumbnail from storage
+  if (category.thumbnailUrl && category.thumbnailUrl.includes('supabase')) {
+    try {
+      await deleteImage(category.thumbnailUrl);
+      console.log(`✓ Deleted category thumbnail: ${category.thumbnailUrl}`);
+    } catch (err) {
+      console.warn(`✗ Failed to delete category thumbnail:`, err);
+    }
+  }
 }
