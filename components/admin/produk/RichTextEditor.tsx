@@ -296,7 +296,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
               editor
                 .chain()
                 .focus()
-                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
                 .run()
             }
             title="Insert Table"
