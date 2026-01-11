@@ -152,12 +152,6 @@ export const ZoomableContent: React.FC<{
                   <p className="text-foreground">{current.caption}</p>
                 </div>
               )}
-
-              {items.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 px-4 py-2 rounded-full text-sm font-medium">
-                  {currentIndex + 1} / {items.length}
-                </div>
-              )}
             </div>
           </DialogContent>
         </Dialog>
