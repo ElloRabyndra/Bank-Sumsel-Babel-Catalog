@@ -31,8 +31,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { uploadImage } from "@/lib/api/storage";
 
@@ -83,6 +85,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Table dialog state
+  const [tableDialogOpen, setTableDialogOpen] = useState(false);
+  const [tableRows, setTableRows] = useState(2);
+  const [tableCols, setTableCols] = useState(2);
 
   const editor = useEditor({
     extensions: [
@@ -204,6 +211,39 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   };
 
+  // Table dialog handlers
+  const handleOpenTableDialog = () => {
+    setTableRows(2);
+    setTableCols(2);
+    setTableDialogOpen(true);
+  };
+
+  const handleInsertTable = () => {
+    if (!editor) return;
+    
+    editor
+      .chain()
+      .focus()
+      .insertTable({ rows: tableRows, cols: tableCols, withHeaderRow: true })
+      .run();
+    
+    setTableDialogOpen(false);
+  };
+
+  const handleTableRowsChange = (value: string) => {
+    const num = parseInt(value);
+    if (!isNaN(num) && num >= 1 && num <= 20) {
+      setTableRows(num);
+    }
+  };
+
+  const handleTableColsChange = (value: string) => {
+    const num = parseInt(value);
+    if (!isNaN(num) && num >= 1 && num <= 10) {
+      setTableCols(num);
+    }
+  };
+
   if (!editor) {
     return (
       <div className="border rounded-lg p-4 min-h-50 animate-pulse bg-muted" />
@@ -292,13 +332,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <Separator orientation="vertical" className="h-6 mx-1" />
 
           <ToolbarButton
-            onClick={() =>
-              editor
-                .chain()
-                .focus()
-                .insertTable({ rows: 2, cols: 2, withHeaderRow: true })
-                .run()
-            }
+            onClick={handleOpenTableDialog}
             title="Insert Table"
             disabled={isUploading}
           >
@@ -350,6 +384,59 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </p>
       )}
 
+      {/* Table Size Dialog */}
+      <Dialog open={tableDialogOpen} onOpenChange={setTableDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sisipkan Tabel</DialogTitle>
+            <DialogDescription>
+              Tentukan ukuran tabel yang ingin ditambahkan
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="table-rows">Jumlah Baris (1-5)</Label>
+              <Input
+                id="table-rows"
+                type="number"
+                min="1"
+                max="5"
+                value={tableRows}
+                onChange={(e) => handleTableRowsChange(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="table-cols">Jumlah Kolom (1-10)</Label>
+              <Input
+                id="table-cols"
+                type="number"
+                min="1"
+                max="5"
+                value={tableCols}
+                onChange={(e) => handleTableColsChange(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setTableDialogOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button type="button" onClick={handleInsertTable}>
+              Sisipkan Tabel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Upload Dialog */}
       <Dialog
         open={imageDialogOpen}
         onOpenChange={(open) => !open && handleCancelImages()}
