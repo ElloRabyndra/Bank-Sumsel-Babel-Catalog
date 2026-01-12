@@ -23,7 +23,7 @@ export const DeleteProductDialog: React.FC<DeleteProductDialogProps> = ({
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-80 sm:max-w-md rounded-2xl">
         <AlertDialogHeader>
           <AlertDialogTitle>Hapus Konten?</AlertDialogTitle>
           <AlertDialogDescription>

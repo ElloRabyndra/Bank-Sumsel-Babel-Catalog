@@ -22,11 +22,11 @@ export function StatsGrid({ stats }: StatsGridProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-                <p className="text-3xl font-bold">{stat.value}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-base sm:text-3xl font-bold">{stat.value}</p>
               </div>
               <div className={cn("p-3 rounded-lg bg-muted", stat.color)}>
-                <stat.icon className="w-6 h-6" />
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
             </div>
           </CardContent>

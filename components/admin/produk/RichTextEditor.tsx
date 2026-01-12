@@ -386,7 +386,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
       {/* Table Size Dialog */}
       <Dialog open={tableDialogOpen} onOpenChange={setTableDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-80 sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>Sisipkan Tabel</DialogTitle>
             <DialogDescription>

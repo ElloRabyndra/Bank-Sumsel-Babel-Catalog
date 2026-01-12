@@ -22,7 +22,7 @@ export const CategoryTableRow: React.FC<CategoryTableRowProps> = ({
 }) => {
   return (
     <TableRow>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         <Image
           src={category.thumbnailUrl}
           alt={category.name}

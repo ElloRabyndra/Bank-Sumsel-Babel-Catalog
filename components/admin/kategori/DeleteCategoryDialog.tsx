@@ -24,7 +24,7 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-80 sm:max-w-md rounded-2xl">
         <AlertDialogHeader>
           <AlertDialogTitle>Hapus Kategori?</AlertDialogTitle>
           <AlertDialogDescription>
