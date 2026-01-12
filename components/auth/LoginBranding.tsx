@@ -69,7 +69,7 @@ export function LoginBranding() {
         </div>
 
         <div className="text-white/50 text-sm">
-          © 2024 Bank Sumsel Babel. Semua hak dilindungi.
+          © 2026 Bank Sumsel Babel.
         </div>
       </div>
     </div>
