@@ -228,7 +228,7 @@ Bank-Sumsel-Babel-Catalog/
 
    **For production/deployment** (`.env`):
 ```env
-   SUPABASE_URL=your_production_supabase_url
+   SUPABASE_URL=your_supabase_project_url
    SUPABASE_SERVICE_ROLE_KEY=your_production_role_key
 ```
 
