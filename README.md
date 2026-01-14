@@ -228,8 +228,8 @@ Bank-Sumsel-Babel-Catalog/
 
    **For production/deployment** (`.env`):
 ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+   SUPABASE_URL=your_production_supabase_url
+   SUPABASE_SERVICE_ROLE_KEY=your_production_role_key
 ```
 
    > **Note**: `.env.local` is used for local development and is ignored by Git. `.env` can be used for production deployment or as a template.
