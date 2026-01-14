@@ -232,8 +232,6 @@ Bank-Sumsel-Babel-Catalog/
    SUPABASE_SERVICE_ROLE_KEY=your_production_role_key # Project settings > API Keys > Legacy Legacy anon, service_role API keys
 ```
 
-   > **Note**: `.env.local` is used for local development and is ignored by Git. `.env` can be used for production deployment or as a template.
-
    Get these values from your [Supabase project settings](https://supabase.com/dashboard).
 
 4. **Set up Supabase database**
