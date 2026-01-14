@@ -222,14 +222,14 @@ Bank-Sumsel-Babel-Catalog/
 
    **For local development** (`.env.local`):
 ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url # Project settings > Data API
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key # Project settings > API Keys > Legacy Legacy anon, service_role API keys
 ```
 
    **For production/deployment** (`.env`):
 ```env
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_SERVICE_ROLE_KEY=your_production_role_key
+   SUPABASE_URL=your_supabase_project_url # Project settings > Data API
+   SUPABASE_SERVICE_ROLE_KEY=your_production_role_key # Project settings > API Keys > Legacy Legacy anon, service_role API keys
 ```
 
    > **Note**: `.env.local` is used for local development and is ignored by Git. `.env` can be used for production deployment or as a template.
