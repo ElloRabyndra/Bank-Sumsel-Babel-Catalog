@@ -37,6 +37,7 @@ export function LoginFormFields({
           <Input
             id="email"
             type="email"
+            placeholder="Masukkan Email Admin"
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
             className="pl-11 h-12 bg-muted/50 border-muted-foreground/20 focus:border-primary transition-colors"
